@@ -48,7 +48,7 @@ export function configureMiddleware(app: express.Express) {
       name: fromEnv('API_SESSION_NAME'),
       secret: fromEnv('API_SESSION_KEYS'),
       genid: () => nsid(),
-      resave: false,
+      resave: true,
       saveUninitialized: false,
     }),
   );
