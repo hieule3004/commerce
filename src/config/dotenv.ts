@@ -47,22 +47,26 @@ const cookieSchema = z.object({
   COOKIE_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
 });
 
+/** DotEnv schema */
 const dotEnvValidator = systemSchema
   .and(serverSchema)
   .and(httpSchema)
   .and(httpSecureSchema)
   .and(cookieSchema);
 
+/** DotEnv type */
 type DotEnv = z.infer<typeof dotEnvValidator>;
 
 const result = dotEnvValidator.safeParse(process.env);
-
 if (!result.success) {
   console.error(result.error.format());
   process.exit(1);
 }
+
+/** DotEnv object */
 const dotEnv = result.data;
 
+/** Get environment variable */
 const fromEnv = <K extends keyof DotEnv>(key: K) => dotEnv[key];
 
 export { DotEnv, fromEnv };

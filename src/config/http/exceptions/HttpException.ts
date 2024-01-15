@@ -4,7 +4,7 @@ class HttpException extends Error {
   constructor(
     readonly status: number,
     readonly response?: string | object,
-    cause?: Error,
+    readonly cause?: Error,
   ) {
     super(typeof response === 'string' ? response : StatusCodes[status], { cause });
   }
