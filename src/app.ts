@@ -1,10 +1,10 @@
-import express from 'express';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { configureErrMiddleware, configureMiddleware } from '@src/middleware';
 import { configureRoute } from '@src/route';
+import { createApplication } from '@src/utils/application';
 
-const app = express();
+const app = createApplication();
 
 const logger = ApplicationLogger({ level: fromEnv('LOG_LEVEL') });
 app.set('LoggerService', logger);

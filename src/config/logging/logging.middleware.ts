@@ -1,13 +1,9 @@
-import express from 'express';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
+import { Request, RequestHandler, Response } from '@src/utils/application';
 import { RequestLogDto, ResponseLogDto } from './logging.interface';
 import { ApplicationLogger } from './logging.utils';
 
-export default function logRequest(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) {
+const logRequest: RequestHandler = (req, res, next) => {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
 
   const requestDto = buildRequestLog(req);
@@ -19,9 +15,9 @@ export default function logRequest(
   });
 
   next();
-}
+};
 
-function buildRequestLog(req: express.Request): RequestLogDto {
+function buildRequestLog(req: Request): RequestLogDto {
   const requestId = req.headers[X_REQUEST_ID] as string;
   const url = req.url;
   const method = req.method;
@@ -29,7 +25,7 @@ function buildRequestLog(req: express.Request): RequestLogDto {
   return { requestId, method, url };
 }
 
-function buildResponseLog(res: express.Response): ResponseLogDto {
+function buildResponseLog(res: Response): ResponseLogDto {
   const requestId = res.getHeader(X_REQUEST_ID) as string;
   const code = res.statusCode;
   const message = res.statusMessage;
@@ -37,3 +33,5 @@ function buildResponseLog(res: express.Response): ResponseLogDto {
 
   return { requestId, code, message, elapsedMs };
 }
+
+export default logRequest;

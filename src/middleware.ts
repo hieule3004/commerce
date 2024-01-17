@@ -2,7 +2,6 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cookieSession from 'cookie-session';
 import cors from 'cors';
-import express from 'express';
 import rateLimit from 'express-rate-limit';
 import expressSession from 'express-session';
 import helmet from 'helmet';
@@ -12,11 +11,12 @@ import exceptionFilter from '@src/config/http/exception.filter';
 import customHeaders from '@src/config/http/header.middleware';
 import logResponseData from '@src/config/logging/logging.interceptor';
 import logRequest from '@src/config/logging/logging.middleware';
+import { Application, json, serveStatic, urlencoded } from '@src/utils/application';
 import { HttpStatus } from '@src/utils/http';
 import { nsid } from '@src/utils/nsid';
 
-export function configureMiddleware(app: express.Express) {
-  app.use(express.static('public'));
+export function configureMiddleware(app: Application) {
+  app.use(serveStatic('public'));
 
   app.use(cors({}));
   app.use(helmet());
@@ -26,8 +26,8 @@ export function configureMiddleware(app: express.Express) {
   app.use(compression());
 
   const limit = fromEnv('HTTP_REQUEST_SIZE_LIMIT');
-  app.use(express.json({ limit }));
-  app.use(express.urlencoded({ extended: true, limit }));
+  app.use(json({ limit }));
+  app.use(urlencoded({ extended: true, limit }));
   app.use(cookieParser());
 
   // cookie session
@@ -70,6 +70,6 @@ export function configureMiddleware(app: express.Express) {
   app.use(logResponseData);
 }
 
-export function configureErrMiddleware(app: express.Express) {
+export function configureErrMiddleware(app: Application) {
   app.use(exceptionFilter);
 }

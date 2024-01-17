@@ -1,18 +1,12 @@
-import express from 'express';
-import { Writable } from '@src/utils/type';
-import HttpException from './exceptions/HttpException';
+import HttpException from '@src/common/exceptions/HttpException';
+import { ErrorRequestHandler } from '@src/utils/application';
 
-export default function exceptionFilter(
-  err: string | object,
-  _: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) {
+const exceptionFilter: ErrorRequestHandler = (err: string | object, _, res, next) => {
   const exception = err instanceof HttpException ? err : new HttpException(500, err);
   const e = buildErrorResponse(exception);
-  res.status(e.getStatus()).json(e.getResponse());
+  res.status(exception.getStatus()).json(e);
   next();
-}
+};
 
 function buildErrorResponse(exception: HttpException) {
   const code = exception.getStatus();
@@ -21,6 +15,7 @@ function buildErrorResponse(exception: HttpException) {
   const message = typeof descOrErr === 'string' ? descOrErr : (descOrErr as Error).message;
   const meta = descOrErr instanceof Error ? descOrErr : exception.cause;
 
-  (exception as Writable<HttpException>).response = { error: { code, message, meta } };
-  return exception;
+  return { error: { code, message, meta } };
 }
+
+export default exceptionFilter;

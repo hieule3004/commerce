@@ -1,12 +1,8 @@
-import express from 'express';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
+import { RequestHandler } from '@src/utils/application';
 import { nsid } from '@src/utils/nsid';
 
-export default function addCustomHeader(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) {
+const addCustomHeader: RequestHandler = (req, res, next) => {
   // set custom request timestamp
   req.headers[X_REQUEST_TIMESTAMP] = String(Date.now());
 
@@ -16,4 +12,6 @@ export default function addCustomHeader(
   res.setHeader(X_REQUEST_ID, requestId);
 
   next();
-}
+};
+
+export default addCustomHeader;
