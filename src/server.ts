@@ -12,8 +12,8 @@ const isSecure = fromEnv('HTTP_SECURE');
 const server = isSecure
   ? https.createServer(
       {
-        cert: readFileSync(fromEnv('HTTP_CA_CERT')),
-        key: readFileSync(fromEnv('HTTP_CA_KEY')),
+        cert: readFileSync(fromEnv('HTTP_CA_CERT') as string),
+        key: readFileSync(fromEnv('HTTP_CA_KEY') as string),
         passphrase: fromEnv('HTTP_CA_PASS'),
         rejectUnauthorized: false,
       },
