@@ -1,4 +1,5 @@
+/** {@link JSON.stringify} replacer function to redact sensitive information */
 export const redact =
-  <T>(keys: string[], format?: (key: string, value: unknown) => T) =>
+  <T>(test: (key: string) => boolean, format?: (key: string, value: unknown) => T) =>
   (key: string, value: unknown) =>
-    keys.includes(key) ? format?.(key, value) : value;
+    test(key) ? format?.(key, value) : value;

@@ -50,8 +50,7 @@ const commonFormat = combine(errors({ stack: true }), timestamp(), messageFormat
 
 const Formats = {
   console: combine(commonFormat, cli({ colors, levels }), consolePrintFormat),
-  // eslint-disable-next-line
-  file: combine(commonFormat, json({ replacer: redact(['splat']) })),
+  file: combine(commonFormat, json({ replacer: redact((k) => k === 'splat') })),
 };
 
 const Transports = Object.freeze({
