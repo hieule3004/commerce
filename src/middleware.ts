@@ -1,17 +1,21 @@
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import cookieSession from 'cookie-session';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
-import expressSession from 'express-session';
-import helmet from 'helmet';
-import methodOverride from 'method-override';
 import { fromEnv } from '@src/config/dotenv';
 import exceptionFilter from '@src/config/http/exception.filter';
 import customHeaders from '@src/config/http/header.middleware';
 import logResponseData from '@src/config/logging/logging.interceptor';
 import logRequest from '@src/config/logging/logging.middleware';
-import { Application, json, serveStatic, urlencoded } from '@src/utils/application';
+import { Application, serveStatic } from '@src/utils/application';
+import {
+  compression,
+  cookieParser,
+  cookieSession,
+  cors,
+  helmet,
+  json,
+  methodOverride,
+  rateLimit,
+  session,
+  urlencoded,
+} from '@src/utils/application/middleware';
 import { HttpStatus } from '@src/utils/http';
 import { nsid } from '@src/utils/nsid';
 
@@ -44,7 +48,7 @@ export function configureMiddleware(app: Application) {
   // Reference: https://davidburgos.blog/expressjs-session-error-req-session-touch-not-function
   app.set('trust proxy', 1);
   app.use(
-    expressSession({
+    session({
       name: fromEnv('API_SESSION_NAME'),
       secret: fromEnv('API_SESSION_KEYS'),
       genid: () => nsid(),
@@ -70,6 +74,6 @@ export function configureMiddleware(app: Application) {
   app.use(logResponseData);
 }
 
-export function configureErrMiddleware(app: Application) {
+export function configureErrorMiddleware(app: Application) {
   app.use(exceptionFilter);
 }

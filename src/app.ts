@@ -1,6 +1,6 @@
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
-import { configureErrMiddleware, configureMiddleware } from '@src/middleware';
+import { configureErrorMiddleware, configureMiddleware } from '@src/middleware';
 import { configureRoute } from '@src/route';
 import { createApplication } from '@src/utils/application';
 
@@ -11,6 +11,6 @@ app.set('LoggerService', logger);
 
 configureMiddleware(app);
 configureRoute(app);
-configureErrMiddleware(app);
+configureErrorMiddleware(app);
 
 export default app;
