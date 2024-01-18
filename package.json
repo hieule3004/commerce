@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start:dev": "nodemon -r tsconfig-paths/register -r dotenv/config src/server.ts dotenv_config_path=./etc/env/.env.local"
+    "start:dev": "nodemon -r tsconfig-paths/register -r dotenv/config src/server.ts dotenv_config_path=./etc/env/.env.local",
+    "test:unit": "jest --config test/setup/jest-unit.config.ts",
+    "test:unit-debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/setup/jest-unit.config.ts",
+    "test:e2e": "jest --config test/setup/jest-e2e.config.ts",
+    "test:e2e-debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/setup/jest-e2e.config.ts"
   },
   "nodemonConfig": {
     "watch": [
