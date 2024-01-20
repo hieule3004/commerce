@@ -1,19 +1,19 @@
-import { Config } from 'jest';
+import { JestConfigWithTsJest, pathsToModuleNameMapper } from 'ts-jest';
+import { compilerOptions } from '../../tsconfig.json';
 
-const config: Config = {
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  rootDir: '../..',
-  moduleNameMapper: {
-    '^@src/(.*)$': '<rootDir>/src/$1',
-  },
+export default {
   testEnvironment: 'node',
+  preset: 'ts-jest',
+  rootDir: '../..',
+  roots: ['<rootDir>'],
+  modulePaths: [compilerOptions.baseUrl],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>' }),
   transform: { '^.+\\.(t|j)sx?$': 'ts-jest' },
+  moduleFileExtensions: ['ts', 'js', 'json'],
   setupFilesAfterEnv: [
     '<rootDir>/test/setup/global.setup.ts',
     '<rootDir>/test/setup/dotenv.setup.ts',
   ],
   maxWorkers: 1,
   runner: '<rootDir>/test/setup/runner.config.ts' /* simulate --runInBand */,
-};
-
-export default config;
+} as JestConfigWithTsJest;

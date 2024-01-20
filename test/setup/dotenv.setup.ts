@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
+import { configDotenv } from 'dotenv';
 
 afterAll(() => {
-  dotenv.config();
+  configDotenv();
 });

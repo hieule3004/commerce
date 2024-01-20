@@ -57,16 +57,19 @@ const dotEnvValidator = systemSchema
 /** DotEnv type */
 type DotEnv = z.infer<typeof dotEnvValidator>;
 
-const result = dotEnvValidator.safeParse(process.env);
-if (!result.success) {
-  console.error(result.error.format());
-  process.exit(1);
-}
+const parseEnv = (env: unknown) => {
+  const result = dotEnvValidator.safeParse(env);
+  if (!result.success) {
+    console.error(result.error.format());
+    process.exit(1);
+  }
+  return result.data;
+};
 
 /** DotEnv object */
-const dotEnv = result.data;
+const dotEnv = parseEnv(process.env);
 
 /** Get environment variable */
 const fromEnv = <K extends keyof DotEnv>(key: K) => dotEnv[key];
 
-export { DotEnv, fromEnv };
+export { DotEnv, fromEnv, parseEnv };
