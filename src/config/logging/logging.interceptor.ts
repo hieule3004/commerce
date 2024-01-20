@@ -16,4 +16,5 @@ const logResponseData: RequestHandler = function (req, res, next) {
 
   next();
 };
+
 export default logResponseData;
