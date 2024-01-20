@@ -1,19 +1,14 @@
 {
+  "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ESNext",
-    "moduleResolution": "node",
+    "incremental": true,
+    "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
       "@src/*": [
         "./src/*"
       ]
-    },
-    "incremental": true,
-    "sourceMap": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true
+    }
   },
   "exclude": [
     "node_modules"
