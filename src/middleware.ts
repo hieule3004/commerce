@@ -24,8 +24,7 @@ export function configureMiddleware(app: Application) {
 
   app.use(cors({}));
   app.use(helmet());
-  // remove from request header
-  app.disable('X-Powered-By'.toLowerCase());
+  // app.disable('X-Powered-By'.toLowerCase());
   app.use(methodOverride());
   app.use(compression());
 

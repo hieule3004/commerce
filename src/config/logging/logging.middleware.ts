@@ -9,10 +9,12 @@ const logRequest: RequestHandler = (req, res, next) => {
   const requestDto = buildRequestLog(req);
   logger.log(requestDto);
 
-  res.on('finish', () => {
+  const $ = res.json;
+  res.json = function (data: object) {
     const responseDto = buildResponseLog(res);
     logger.log(responseDto);
-  });
+    return $.call(this, data);
+  };
 
   next();
 };
