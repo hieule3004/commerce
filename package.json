@@ -4,8 +4,9 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "nodemon src/server.ts",
-    "test:unit": "nodemon -q --exec \"jest --config test/setup/jest-unit.config.ts\"",
-    "test:e2e": "nodemon -q --exec \"jest --config test/setup/jest-e2e.config.ts\""
+    "test:unit": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-unit.config.ts",
+    "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts",
+    "nodemon": "nodemon -q --exec yarn run __script__"
   },
   "nodemonConfig": {
     "env": {
