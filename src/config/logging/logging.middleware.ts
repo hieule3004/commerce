@@ -1,6 +1,6 @@
 import { NextFunction } from 'express';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
-import { Layer, Request, RequestHandler, Response, Router } from '@src/utils/application';
+import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
 import { RequestLogDto, ResponseLogDto } from './logging.interface';
 import { ApplicationLogger } from './logging.utils';
 
@@ -30,7 +30,7 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): Reque
   prototype.handle_request = function (req, res, next) {
     if (this.name === 'router') {
       this.handle(req, res, next);
-      Object.assign(Object.assign(params, this.params), scanParams(this.handle as Router));
+      Object.assign(params, req.params);
     }
     next();
   };
@@ -43,21 +43,6 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): Reque
   const body = req.body as unknown;
 
   return { requestId, method, url, path, params, query, body };
-}
-
-function scanParams(router: Router) {
-  return (router.stack as Layer[])
-    .map((layer): object => {
-      switch (layer.name) {
-        case 'bound dispatch':
-          return layer.params as object;
-        case 'router':
-          return scanParams(layer.handle as Router);
-        default:
-          return {};
-      }
-    })
-    .reduce((t, o) => Object.assign(t, o), {});
 }
 
 function buildResponseLog(res: Response): ResponseLogDto {

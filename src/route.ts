@@ -10,7 +10,7 @@ export function configureRoutes() {
   TEST.router.all('/sub/:name', (req, res) => {
     res.json({ params: req.params, query: req.query, body: req.body as unknown });
   });
-  HOME.router.all('/hello/:id', (_, res) => {
+  HOME.router.all('/hello/:idx', (_, res) => {
     res.json({ hello: 'world' });
   });
   HOME.router.get('/error', () => {
