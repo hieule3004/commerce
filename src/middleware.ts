@@ -3,6 +3,7 @@ import exceptionFilter from '@src/config/http/exception.filter';
 import customHeaders from '@src/config/http/header.middleware';
 import logResponseData from '@src/config/logging/logging.interceptor';
 import logRequest from '@src/config/logging/logging.middleware';
+import { configureRoutes } from '@src/route';
 import { Application, serveStatic } from '@src/utils/application';
 import {
   compression,
@@ -71,8 +72,11 @@ export function configureMiddleware(app: Application) {
   app.use(customHeaders);
   app.use(logRequest);
   app.use(logResponseData);
-}
 
-export function configureErrorMiddleware(app: Application) {
+  // routing
+  const routes = configureRoutes();
+  for (const { path, router } of routes) app.use(path, router);
+
+  // exception filter
   app.use(exceptionFilter);
 }
