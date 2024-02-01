@@ -1,22 +1,16 @@
-import { Router } from '@src/utils/application';
+import { Application } from '@src/utils/application';
 
-export function configureRoutes() {
-  const routes = {
-    HOME: createRoute('/'),
-    TEST: createRoute('/test/:id'),
-  };
-  const { HOME, TEST } = routes;
-
-  TEST.router.all('/sub/:name', (req, res) => {
+export function configureRoutes(app: Application) {
+  app.route('/test/:id/sub/:name').all((req, res) => {
     res.json({ params: req.params, query: req.query, body: req.body as unknown });
   });
-  HOME.router.all('/hello/:idx', (_, res) => {
+  app.route('/hello/:idx').all((_, res) => {
     res.json({ hello: 'world' });
   });
-  HOME.router.get('/error', () => {
+  app.route('/error').get(() => {
     throw new Error('error');
   });
-  HOME.router.get('/', (req, res) => {
+  app.route('/').get((req, res) => {
     const baseURL = `${req.protocol}://${req.headers.host}`;
     res.status(200).json({
       data: {
@@ -27,10 +21,4 @@ export function configureRoutes() {
       },
     });
   });
-
-  return Object.values(routes);
-}
-
-function createRoute(path: string) {
-  return { path, router: Router({ mergeParams: true, strict: true }) };
 }

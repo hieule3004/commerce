@@ -74,8 +74,7 @@ export function configureMiddleware(app: Application) {
   app.use(logResponseData);
 
   // routing
-  const routes = configureRoutes();
-  for (const { path, router } of routes) app.use(path, router);
+  configureRoutes(app);
 
   // exception filter
   app.use(exceptionFilter);

@@ -4,6 +4,7 @@ import { Layer, Request, RequestHandler, Response } from '@src/utils/application
 import { RequestLogDto, ResponseLogDto } from './logging.interface';
 import { ApplicationLogger } from './logging.utils';
 
+
 const logRequest: RequestHandler = (req, res, next) => {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
 
@@ -28,17 +29,14 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): Reque
   const prototype = Object.getPrototypeOf(router.stack[0]) as Layer;
   const handleRequest = prototype.handle_request;
   prototype.handle_request = function (req, res, next) {
-    if (this.name === 'router') {
-      this.handle(req, res, next);
-      Object.assign(params, req.params);
-    }
+    if (this.name === 'bound dispatch') Object.assign(params, req.params);
+    else if (this.name === 'router') this.handle(req, res, next);
     next();
   };
   router.handle(req, res, next);
   prototype.handle_request = handleRequest;
 
-  const { path } = req;
-
+  const { path } = req.route as { path: string };
   const { method, url, query } = req;
   const body = req.body as unknown;
 
