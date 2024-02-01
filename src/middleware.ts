@@ -1,7 +1,7 @@
 import { fromEnv } from '@src/config/dotenv';
 import exceptionFilter from '@src/config/http/exception.filter';
 import customHeaders from '@src/config/http/header.middleware';
-import logResponseData from '@src/config/logging/logging.interceptor';
+import logData from '@src/config/logging/logging.interceptor';
 import logRequest from '@src/config/logging/logging.middleware';
 import { configureRoutes } from '@src/route';
 import { Application, serveStatic } from '@src/utils/application';
@@ -71,7 +71,7 @@ export function configureMiddleware(app: Application) {
   // custom middleware
   app.use(customHeaders);
   app.use(logRequest);
-  app.use(logResponseData);
+  app.use(logData);
 
   // routing
   configureRoutes(app);

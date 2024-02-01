@@ -1,9 +1,10 @@
+import util from 'node:util';
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { redact } from '@src/utils/serialisation';
 import { DEFAULT_LOG_LEVEL, Loglevel, Loglevels, colors, levels } from './logging.constant';
 
-const { cli, combine, errors, json, printf, splat, timestamp } = winston.format;
+const { cli, combine, errors, json, logstash, printf, splat, timestamp } = winston.format;
 
 /**---- Logger interface ----**/
 
@@ -31,26 +32,48 @@ const UniformLogger = (loggerOptions?: winston.LoggerOptions) => {
 
 /**---- Logger options ----**/
 
+type MessageFormat = <M = unknown>(message: M) => string;
 type ErrInfo = { cause?: ErrInfo; stack?: unknown };
-const messageFormat = printf((info) => {
-  const message: unknown = info.message;
-  let value = typeof message === 'object' ? JSON.stringify(message) : (message as string);
-  let e = info as ErrInfo | undefined;
-  if (e?.stack) for (let i = 0; e; e = e.cause, i++) value += `\n[${i}] ${String(e.stack)}`;
 
-  info.message = value;
-  return info.message as string;
-});
+const jsonFmt: MessageFormat = (message) =>
+  typeof message === 'object' ? JSON.stringify(message) : (message as string);
 
-const consolePrintFormat = printf((info) => {
-  return `${info.timestamp} ${info.level} ${info.message}`;
-});
+const strFmt: (colors: boolean) => MessageFormat = (colors) => (message) => {
+  if (typeof message !== 'object') return message as string;
+  const formatKey = colors ? (k: string) => `\x1b[36m${k}\x1b[m` : (k: string) => k;
+  const inspectOptions = { compact: true, colors, breakLength: Infinity };
+  return Object.entries(message as object)
+    .map(([k, v]) => `${formatKey(k)}=${util.formatWithOptions(inspectOptions, v)}`)
+    .join(' ');
+};
 
-const commonFormat = combine(errors({ stack: true }), timestamp(), messageFormat, splat());
+const message = (format: (message: unknown) => string) =>
+  printf((info) => {
+    let value = format(info.message);
+    let e = info as ErrInfo | undefined;
+    if (e?.stack) for (let i = 0; e; e = e.cause, i++) value += `\n[${i}] ${String(e.stack)}`;
+
+    info.message = value;
+    return info.message as string;
+  });
 
 const Formats = {
-  console: combine(commonFormat, cli({ colors, levels }), consolePrintFormat),
-  file: combine(commonFormat, json({ replacer: redact((k) => k === 'splat') })),
+  console: combine(
+    errors({ stack: true }),
+    timestamp(),
+    message(strFmt(true)),
+    splat(),
+    cli({ colors, levels }),
+    printf((info) => `${info.timestamp} ${info.level} ${info.message}`),
+  ),
+  file: combine(
+    errors({ stack: true }),
+    timestamp(),
+    message(jsonFmt),
+    splat(),
+    json({ replacer: redact((k) => k === 'splat') }),
+    logstash(),
+  ),
 };
 
 const Transports = Object.freeze({

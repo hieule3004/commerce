@@ -1,9 +1,8 @@
 import { NextFunction } from 'express';
+import { JsonDto } from '@src/common/dtos/json.dto';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
 import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
-import { RequestLogDto, ResponseLogDto } from './logging.interface';
 import { ApplicationLogger } from './logging.utils';
-
 
 const logRequest: RequestHandler = (req, res, next) => {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
@@ -21,7 +20,7 @@ const logRequest: RequestHandler = (req, res, next) => {
   next();
 };
 
-function buildRequestLog(req: Request, res: Response, next: NextFunction): RequestLogDto {
+function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
   const requestId = req.headers[X_REQUEST_ID] as string;
 
   const params = {};
@@ -40,16 +39,16 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): Reque
   const { method, url, query } = req;
   const body = req.body as unknown;
 
-  return { requestId, method, url, path, params, query, body };
+  return { id: requestId, type: 'request', data: { method, url, path, params, query, body } };
 }
 
-function buildResponseLog(res: Response): ResponseLogDto {
+function buildResponseLog(res: Response): JsonDto {
   const requestId = res.getHeader(X_REQUEST_ID) as string;
   const code = res.statusCode;
   const message = res.statusMessage;
   const elapsedMs = Date.now() - Number(res.req.headers[X_REQUEST_TIMESTAMP]);
 
-  return { requestId, code, message, elapsedMs };
+  return { id: requestId, type: 'response', data: { code, message, elapsedMs } };
 }
 
 export default logRequest;

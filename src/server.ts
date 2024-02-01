@@ -1,9 +1,11 @@
 import http from 'node:http';
 import https from 'node:https';
 import app from '@src/app';
+import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
+import { nsid } from '@src/utils/nsid';
 
 const logger = app.get('LoggerService') as ApplicationLogger;
 const port = fromEnv('PORT');
@@ -22,5 +24,6 @@ const server = isSecure
   : http.createServer({}, app);
 
 server.listen(port, () => {
-  logger.log({ url: `${isSecure ? 'https' : 'http'}://localhost:${port}` });
+  const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
+  logger.log({ id: nsid(), type: 'start', data: { url } } as JsonDto);
 });
