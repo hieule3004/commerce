@@ -1,4 +1,4 @@
-import { JsonDto } from '@src/common/dtos/json.dto';
+import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
 import { X_REQUEST_ID } from '@src/config/http/http.constant';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { RequestHandler } from '@src/utils/application';
@@ -9,7 +9,8 @@ const logData: RequestHandler = function (req, res, next) {
 
   const $ = res.json;
   res.json = function (data: object) {
-    if ('error' in data) logger.debug({ requestId, error: data.error });
+    if ('error' in data)
+      logger.debug({ id: requestId, type: 'error', error: data.error } as JsonErrorDto);
     else logger.debug({ id: requestId, type: 'data', data } as JsonDto);
 
     return $.call(this, data);
