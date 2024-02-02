@@ -47,12 +47,17 @@ const cookieSchema = z.object({
   COOKIE_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
 });
 
+const redisSchema = z.object({
+  REDIS_URL: z.string().url(),
+})
+
 /** DotEnv schema */
 const dotEnvValidator = systemSchema
   .and(serverSchema)
   .and(httpSchema)
   .and(httpSecureSchema)
-  .and(cookieSchema);
+  .and(cookieSchema)
+  .and(redisSchema);
 
 /** DotEnv type */
 type DotEnv = z.infer<typeof dotEnvValidator>;

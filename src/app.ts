@@ -1,3 +1,4 @@
+import { Cache } from '@src/config/cache/cache.service';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { configureMiddleware } from '@src/middleware';
@@ -7,6 +8,7 @@ const app = createApplication();
 
 const logger = ApplicationLogger({ level: fromEnv('LOG_LEVEL') });
 app.set('LoggerService', logger);
+void Cache().then((cache) => app.set('Cache', cache));
 
 configureMiddleware(app);
 

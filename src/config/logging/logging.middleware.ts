@@ -1,8 +1,7 @@
-import { StatusCodes } from '@src/utils/http';
-import { NextFunction } from 'express';
 import { JsonDto } from '@src/common/dtos/json.dto';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
-import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
+import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/utils/application';
+import { HttpStatus, StatusCodes } from '@src/utils/http';
 import { ApplicationLogger } from './logging.utils';
 
 const logRequest: RequestHandler = (req, res, next) => {
@@ -17,8 +16,6 @@ const logRequest: RequestHandler = (req, res, next) => {
     logger.log(responseDto);
     return $.call(this, data);
   };
-
-  next();
 };
 
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
@@ -36,7 +33,10 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
   router.handle(req, res, next);
   prototype.handle_request = handleRequest;
 
-  const { path } = req.route as { path: string };
+  const route = req.route as { path: string } | undefined;
+  if (!route) throw HttpStatus.NOT_FOUND.toException();
+  const path = route.path;
+
   const { method, url, query } = req;
   const body = req.body as unknown;
 
