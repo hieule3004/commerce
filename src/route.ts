@@ -10,6 +10,9 @@ export function configureRoutes(app: Application) {
   app.route('/error').get(() => {
     throw new Error('error');
   });
+  app.route('/health').get((_, res) => {
+    res.status(200).json({ status: 'OK' });
+  });
   app.route('/').get((req, res) => {
     const baseURL = `${req.protocol}://${req.headers.host}`;
     res.status(200).json({

@@ -1,0 +1,25 @@
+x-healthcheck: &healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 3
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      no_cache: false
+    ports:
+      - '8002:8002'
+    develop:
+      watch:
+        - action: rebuild
+          path: package.json
+        - action: sync+restart
+          path: .
+          target: /api
+    healthcheck:
+      <<: *healthcheck
+      test: yarn run healthcheck || exit 1
+      interval: 60s

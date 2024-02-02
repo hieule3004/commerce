@@ -1,3 +1,4 @@
+import { StatusCodes } from '@src/utils/http';
 import { NextFunction } from 'express';
 import { JsonDto } from '@src/common/dtos/json.dto';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
@@ -45,10 +46,10 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
 function buildResponseLog(res: Response): JsonDto {
   const requestId = res.getHeader(X_REQUEST_ID) as string;
   const code = res.statusCode;
-  const message = res.statusMessage;
-  const elapsedMs = Date.now() - Number(res.req.headers[X_REQUEST_TIMESTAMP]);
+  const message = res.statusMessage ?? StatusCodes[code];
+  const responseTime = Date.now() - Number(res.req.headers[X_REQUEST_TIMESTAMP]);
 
-  return { id: requestId, type: 'response', data: { code, message, elapsedMs } };
+  return { id: requestId, type: 'response', data: { code, message, responseTime } };
 }
 
 export default logRequest;
