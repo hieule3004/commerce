@@ -41,7 +41,7 @@ const jsonFmt: MessageFormat = (message) =>
 const strFmt: (colors: boolean) => MessageFormat = (colors) => (message) => {
   if (typeof message !== 'object') return message as string;
   const formatKey = colors ? (k: string) => `\x1b[36m${k}\x1b[m` : (k: string) => k;
-  const inspectOptions = { compact: true, colors, breakLength: Infinity };
+  const inspectOptions = { depth: null, compact: true, breakLength: Infinity, colors };
   return Object.entries(message as object)
     .map(([k, v]) => `${formatKey(k)}=${util.formatWithOptions(inspectOptions, v)}`)
     .join(' ');
