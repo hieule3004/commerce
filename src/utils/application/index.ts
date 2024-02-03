@@ -22,12 +22,12 @@ type Layer<
   handle_request: express.RequestHandler;
 };
 
-const createApplication = () => express();
+const Application = () => express();
+type Application = express.Application;
 
-export { Layer, createApplication };
+export { Layer, Application };
 
 export {
-  Application,
   ErrorRequestHandler,
   RequestHandler,
   Request,

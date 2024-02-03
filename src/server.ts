@@ -1,18 +1,21 @@
 import http from 'node:http';
 import https from 'node:https';
-import app from '@src/app';
+import { createApplication } from '@src/app';
 import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
 import { nsid } from '@src/utils/nsid';
 
-const logger = app.get('LoggerService') as ApplicationLogger;
-const port = fromEnv('PORT');
+const bootstrap = async () => {
+  const app = await createApplication();
 
-const isSecure = fromEnv('HTTP_SECURE');
-const server = isSecure
-  ? https.createServer(
+  const logger = app.get('LoggerService') as ApplicationLogger;
+  const port = fromEnv('PORT');
+
+  const isSecure = fromEnv('HTTP_SECURE');
+  const server = isSecure
+    ? https.createServer(
       {
         cert: readFileSync(fromEnv('HTTP_CA_CERT') as string),
         key: readFileSync(fromEnv('HTTP_CA_KEY') as string),
@@ -21,9 +24,11 @@ const server = isSecure
       },
       app,
     )
-  : http.createServer({}, app);
+    : http.createServer({}, app);
 
-server.listen(port, () => {
-  const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
-  logger.log({ id: nsid(), type: 'start', data: { url } } as JsonDto);
-});
+  server.listen(port, () => {
+    const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
+    logger.log({ id: nsid(), type: 'start', data: { url } } as JsonDto);
+  });
+}
+void bootstrap();
