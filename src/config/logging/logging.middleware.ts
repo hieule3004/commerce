@@ -38,7 +38,7 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
   const path = route.path;
 
   const { method, url, query } = req;
-  const body = req.body as unknown;
+  const { body } = req as Record<keyof typeof req, unknown>;
 
   return { id: requestId, type: 'request', data: { method, url, path, params, query, body } };
 }
