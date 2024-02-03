@@ -1,3 +1,4 @@
+import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
 import { fromEnv } from '@src/config/dotenv';
 import exceptionFilter from '@src/config/http/exception.filter';
@@ -34,6 +35,8 @@ async function createApplication() {
 }
 
 function configureMiddleware(app: Application) {
+  const cache = app.get('Cache') as Cache;
+
   app.use(serveStatic('public'));
 
   app.use(cors({}));
@@ -42,32 +45,24 @@ function configureMiddleware(app: Application) {
   app.use(methodOverride());
   app.use(compression());
 
-  app.set("query parser", "extended");
+  app.set('query parser', 'extended');
   const limit = fromEnv('HTTP_REQUEST_SIZE_LIMIT');
   app.use(json({ limit }));
   app.use(urlencoded({ extended: true, limit }));
-  app.use(cookieParser());
+  app.use(cookieParser(fromEnv('API_SESSION_KEYS')));
 
-  // cookie session
-  app.use(
-    cookieSession({
-      name: fromEnv('COOKIE_SESSION_NAME'),
-      keys: fromEnv('COOKIE_SESSION_KEYS'),
-      secure: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + fromEnv('COOKIE_SESSION_EXPIRY_MS')),
-    }),
-  );
   // express session, setup after cookie session to avoid session modify
   // Reference: https://davidburgos.blog/expressjs-session-error-req-session-touch-not-function
   app.set('trust proxy', 1);
   app.use(
     session({
+      store: new RedisStore({ client: cache, prefix: `${fromEnv('npm_package_name')}:session:` }),
       name: fromEnv('API_SESSION_NAME'),
       secret: fromEnv('API_SESSION_KEYS'),
+      cookie: { maxAge: fromEnv('API_SESSION_EXPIRY_MS') },
       genid: () => nsid(),
       resave: true,
-      saveUninitialized: false,
+      saveUninitialized: true,
     }),
   );
 

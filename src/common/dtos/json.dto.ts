@@ -6,7 +6,7 @@ export type JsonDto<
   id: Id;
   type: Type;
   data: Data;
-};
+} & { [_ in string]: unknown };
 
 export type JsonErrorDto<
   Type extends string = string,
@@ -16,4 +16,4 @@ export type JsonErrorDto<
   id: Id;
   type: Type;
   error: Error;
-};
+} & { [_ in string]: unknown };

@@ -66,6 +66,7 @@
   "dependencies": {
     "chance": "^1.1.11",
     "compression": "^1.7.4",
+    "connect-redis": "^7.1.1",
     "convert": "^4.14.1",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",

@@ -23,7 +23,7 @@ const logRequest: RequestHandler = (req, res, next) => {
 };
 
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
-  const requestId = req.headers[X_REQUEST_ID] as string;
+  const id = req.headers[X_REQUEST_ID] as string;
 
   const v5 = isV5();
   const routerName = v5 ? 'router' : '_router';
@@ -45,19 +45,22 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
   if (!route) throw HttpStatus.NOT_FOUND.toException();
   const path = route.path;
 
+  const sid = req.sessionID;
   const { method, url, query } = req;
   const { body } = req as Record<keyof typeof req, unknown>;
 
-  return { id: requestId, type: 'request', data: { method, url, path, params, query, body } };
+  return { id, sid, type: 'request', data: { method, url, path, params, query, body } };
 }
 
 function buildResponseLog(res: Response): JsonDto {
-  const requestId = res.getHeader(X_REQUEST_ID) as string;
+  const id = res.getHeader(X_REQUEST_ID) as string;
+  const sid = res.req.sessionID;
+
   const code = res.statusCode;
   const message = res.statusMessage ?? StatusCodes[code];
   const responseTime = Date.now() - Number(res.req.headers[X_REQUEST_TIMESTAMP]);
 
-  return { id: requestId, type: 'response', data: { code, message, responseTime } };
+  return { id, sid, type: 'response', data: { code, message, responseTime } };
 }
 
 export default logRequest;

@@ -5,13 +5,13 @@ import { RequestHandler } from '@src/utils/application';
 
 const logData: RequestHandler = function (req, res, next) {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
-  const requestId = req.headers[X_REQUEST_ID] as string;
+  const id = req.headers[X_REQUEST_ID] as string;
+  const sid = req.sessionID;
 
   const $ = res.json;
   res.json = function (data: object) {
-    if ('error' in data)
-      logger.debug({ id: requestId, type: 'error', error: data.error } as JsonErrorDto);
-    else logger.debug({ id: requestId, type: 'data', data } as JsonDto);
+    if ('error' in data) logger.debug({ id, sid, type: 'error', ...data } as JsonErrorDto);
+    else logger.debug({ id, sid, type: 'data', data } as JsonDto);
 
     return $.call(this, data);
   };

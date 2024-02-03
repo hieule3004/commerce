@@ -43,10 +43,7 @@ const httpSecureSchema = z
 const cookieSchema = z.object({
   API_SESSION_NAME: z.string().min(1),
   API_SESSION_KEYS: z.string().transform((s) => s.split(',')),
-
-  COOKIE_SESSION_NAME: z.string().min(1),
-  COOKIE_SESSION_KEYS: z.string().transform((s) => s.split(',')),
-  COOKIE_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
+  API_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
 });
 
 const redisSchema = z.object({

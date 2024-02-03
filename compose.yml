@@ -23,3 +23,12 @@ services:
       <<: *healthcheck
       test: yarn run healthcheck || exit 1
       interval: 60s
+
+  redis:
+    container_name: redis
+    image: redis/redis-stack:latest
+    ports:
+      - '16379:6379'
+    healthcheck:
+      <<: *healthcheck
+      test: redis-cli ping || exit 1
