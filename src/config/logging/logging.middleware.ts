@@ -1,8 +1,12 @@
+import { major, minVersion } from 'semver';
 import { JsonDto } from '@src/common/dtos/json.dto';
+import { fromEnv } from '@src/config/dotenv';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
 import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/utils/application';
 import { HttpStatus, StatusCodes } from '@src/utils/http';
 import { ApplicationLogger } from './logging.utils';
+
+const isV5 = () => major(minVersion(fromEnv('npm_package_dependencies_express'))!) === 5;
 
 const logRequest: RequestHandler = (req, res, next) => {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
@@ -21,18 +25,22 @@ const logRequest: RequestHandler = (req, res, next) => {
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
   const requestId = req.headers[X_REQUEST_ID] as string;
 
+  const v5 = isV5();
+  const routerName = v5 ? 'router' : '_router';
+  const layerHandleProp = v5 ? 'handleRequest' : 'handle_request';
+  const baseHandleName = v5 ? 'handle' : 'bound dispatch';
+
   const params = {};
-  const router = req.app._router as Layer;
+  const router = req.app[routerName] as unknown as Layer;
   const prototype = Object.getPrototypeOf(router.stack[0]) as Layer;
-  const handleRequest = prototype.handle_request;
-  prototype.handle_request = function (req, res, next) {
-    if (this.name === 'bound dispatch') Object.assign(params, req.params);
+  const handleRequest = prototype[layerHandleProp];
+  prototype[layerHandleProp] = function (req, res, next) {
+    if (this.name === baseHandleName) Object.assign(params, req.params);
     else if (this.name === 'router') this.handle(req, res, next);
     next();
   };
   router.handle(req, res, next);
-  prototype.handle_request = handleRequest;
-
+  prototype[layerHandleProp] = handleRequest;
   const route = req.route as { path: string } | undefined;
   if (!route) throw HttpStatus.NOT_FOUND.toException();
   const path = route.path;

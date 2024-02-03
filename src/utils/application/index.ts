@@ -19,7 +19,10 @@ type Layer<
   stack: Layer[];
 
   match: (path: string) => boolean;
+  /** express 4 */
   handle_request: express.RequestHandler;
+  /** express 5 */
+  handleRequest: express.RequestHandler;
 };
 
 const Application = () => express();

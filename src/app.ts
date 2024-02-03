@@ -42,6 +42,7 @@ function configureMiddleware(app: Application) {
   app.use(methodOverride());
   app.use(compression());
 
+  app.set("query parser", "extended");
   const limit = fromEnv('HTTP_REQUEST_SIZE_LIMIT');
   app.use(json({ limit }));
   app.use(urlencoded({ extended: true, limit }));

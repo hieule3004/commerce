@@ -5,6 +5,8 @@ import { convert } from '@src/utils/math/convert';
 
 const systemSchema = z.object({
   npm_package_name: z.string().min(1),
+
+  npm_package_dependencies_express: z.string().min(1),
 });
 
 const serverSchema = z.object({
