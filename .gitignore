@@ -167,7 +167,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-etc/env/.env.local
+etc/env/.env.*
 .env.development.local
 .env.test.local
 .env.production.local
