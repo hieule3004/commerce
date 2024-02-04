@@ -1,21 +1,27 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
     "baseUrl": ".",
     "paths": {
       "@src/*": [
         "./src/*"
       ]
     },
-    "strict": true,
-    "exactOptionalPropertyTypes": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "resolveJsonModule": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": [
     "node_modules"
