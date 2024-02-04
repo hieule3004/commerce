@@ -14,4 +14,4 @@ const addCustomHeader: RequestHandler = (req, res, next) => {
   next();
 };
 
-export default addCustomHeader;
+export { addCustomHeader };

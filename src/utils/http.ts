@@ -1,6 +1,6 @@
 import http from 'node:http';
 import http2 from 'node:http2';
-import HttpException from '@src/common/exceptions/HttpException';
+import { HttpException } from '@src/common/exceptions/HttpException';
 
 const constants = http2.constants;
 

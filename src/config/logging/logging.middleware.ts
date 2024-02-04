@@ -1,5 +1,5 @@
 import { major, minVersion } from 'semver';
-import { JsonDto } from '@src/common/dtos/json.dto';
+import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
 import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/utils/application';
@@ -20,6 +20,22 @@ const logRequest: RequestHandler = (req, res, next) => {
     logger.log(responseDto);
     return $.call(this, data);
   };
+};
+
+const logData: RequestHandler = function (req, res, next) {
+  const logger = req.app.get('LoggerService') as ApplicationLogger;
+  const id = req.headers[X_REQUEST_ID] as string;
+  const sid = req.sessionID;
+
+  const $ = res.json;
+  res.json = function (data: object) {
+    if ('error' in data) logger.debug({ id, sid, type: 'error', ...data } as JsonErrorDto);
+    else logger.debug({ id, sid, type: 'data', data } as JsonDto);
+
+    return $.call(this, data);
+  };
+
+  next();
 };
 
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
@@ -63,4 +79,4 @@ function buildResponseLog(res: Response): JsonDto {
   return { id, sid, type: 'response', data: { code, message, responseTime } };
 }
 
-export default logRequest;
+export { logRequest, logData };

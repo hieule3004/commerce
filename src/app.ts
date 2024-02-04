@@ -1,17 +1,15 @@
 import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
 import { fromEnv } from '@src/config/dotenv';
-import exceptionFilter from '@src/config/http/exception.filter';
-import customHeaders from '@src/config/http/header.middleware';
-import logData from '@src/config/logging/logging.interceptor';
-import logRequest from '@src/config/logging/logging.middleware';
+import { exceptionFilter } from '@src/config/http/exception.filter';
+import { addCustomHeader } from '@src/config/http/header.middleware';
+import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { configureRoutes } from '@src/route';
 import { Application, serveStatic } from '@src/utils/application';
 import {
   compression,
   cookieParser,
-  cookieSession,
   cors,
   helmet,
   json,
@@ -78,7 +76,7 @@ function configureMiddleware(app: Application) {
   );
 
   // custom middleware
-  app.use(customHeaders);
+  app.use(addCustomHeader);
   app.use(logRequest);
   app.use(logData);
 

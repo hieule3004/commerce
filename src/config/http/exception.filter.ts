@@ -1,4 +1,4 @@
-import HttpException from '@src/common/exceptions/HttpException';
+import { HttpException } from '@src/common/exceptions/HttpException';
 import { ErrorRequestHandler } from '@src/utils/application';
 
 const exceptionFilter: ErrorRequestHandler = (err: string | object, _, res, next) => {
@@ -18,4 +18,4 @@ function buildErrorResponse(exception: HttpException) {
   return { error: { code, message, meta } };
 }
 
-export default exceptionFilter;
+export { exceptionFilter };
