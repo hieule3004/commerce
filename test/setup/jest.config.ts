@@ -3,12 +3,11 @@ import { compilerOptions } from '../../tsconfig.json';
 
 export default {
   testEnvironment: 'node',
-  preset: 'ts-jest',
   rootDir: '../..',
   roots: ['<rootDir>'],
   modulePaths: [compilerOptions.baseUrl],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>' }),
-  transform: { '^.+\\.(t|j)sx?$': 'ts-jest' },
+  transform: { '^.+\\.(t|j)sx?$': '@swc/jest' },
   moduleFileExtensions: ['ts', 'js', 'json'],
   setupFilesAfterEnv: [
     '<rootDir>/test/setup/global.setup.ts',
