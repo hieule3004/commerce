@@ -1,5 +1,3 @@
-x-ignore: &ignore
-  profiles: [ 'ignore' ]
 x-healthcheck: &healthcheck
   interval: 10s
   timeout: 5s
@@ -7,20 +5,19 @@ x-healthcheck: &healthcheck
 
 services:
   api:
-    <<: *ignore
     container_name: api
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: ./etc/docker/api/Dockerfile
       no_cache: false
     ports:
-      - '8002:8002'
+      - '8000:8000'
     develop:
       watch:
         - action: rebuild
-          path: package.json
+          path: ../../package.json
         - action: sync+restart
-          path: .
+          path: ../..
           target: /api
     healthcheck:
       <<: *healthcheck
