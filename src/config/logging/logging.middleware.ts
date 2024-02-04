@@ -53,11 +53,7 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
   const prototype = Object.getPrototypeOf(router.stack[0]) as Layer;
   const handleRequest = prototype[layerHandleProp];
   prototype[layerHandleProp] = function (req, res, next) {
-    if (this.name === baseHandleName) {
-      Object.assign(params, req.params);
-      return;
-    }
-
+    if (this.name === baseHandleName) return Object.assign(params, req.params);
     if (this.name === 'router') this.handle(req, res, next);
     next();
   };
