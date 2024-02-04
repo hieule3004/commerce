@@ -6,8 +6,6 @@ import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/uti
 import { HttpStatus, StatusCodes } from '@src/utils/http';
 import { ApplicationLogger } from './logging.utils';
 
-const isV5 = () => major(minVersion(fromEnv('npm_package_dependencies_express'))!) === 5;
-
 const logRequest: RequestHandler = (req, res, next) => {
   const logger = req.app.get('LoggerService') as ApplicationLogger;
 
@@ -20,6 +18,8 @@ const logRequest: RequestHandler = (req, res, next) => {
     logger.log(responseDto);
     return $.call(this, data);
   };
+
+  next();
 };
 
 const logData: RequestHandler = function (req, res, next) {
@@ -38,6 +38,8 @@ const logData: RequestHandler = function (req, res, next) {
   next();
 };
 
+const isV5 = () => major(minVersion(fromEnv('npm_package_dependencies_express'))!) === 5;
+
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
   const id = req.headers[X_REQUEST_ID] as string;
 
@@ -51,8 +53,12 @@ function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonD
   const prototype = Object.getPrototypeOf(router.stack[0]) as Layer;
   const handleRequest = prototype[layerHandleProp];
   prototype[layerHandleProp] = function (req, res, next) {
-    if (this.name === baseHandleName) Object.assign(params, req.params);
-    else if (this.name === 'router') this.handle(req, res, next);
+    if (this.name === baseHandleName) {
+      Object.assign(params, req.params);
+      return;
+    }
+
+    if (this.name === 'router') this.handle(req, res, next);
     next();
   };
   router.handle(req, res, next);
