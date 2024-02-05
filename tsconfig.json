@@ -29,12 +29,5 @@
   },
   "exclude": [
     "node_modules"
-  ],
-  "ts-node": {
-    "swc": true,
-    "require": [
-      "tsconfig-paths/register",
-      "dotenv/config"
-    ]
-  }
+  ]
 }

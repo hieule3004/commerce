@@ -3,23 +3,25 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "tsc",
-    "start:dev": "nodemon src/server.ts",
+    "clean": "rimraf dist",
+    "build": "tsc --project tsconfig.build.json",
+    "prestart": "until [ -f ./dist/etc/register/tsconfig-paths.js ]; do sleep 0.1; done",
+    "start": "DOTENV_CONFIG_PATH=etc/env/.env.local node -r @swc-node/register -r ./dist/etc/register/tsconfig-paths.js -r dotenv/config ./dist/src/server.js",
+    "start:dev": "concurrently -k -p none yarn:watch:*",
+    "watch:build": "yarn build -w >/dev/null",
+    "watch:node": "nodemon -x yarn start",
     "test:unit": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-unit.config.ts",
     "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts",
     "healthcheck": "node -e \"fetch('http://localhost:8000/health').then((res) => console.log(!Number(res.status === 200)))\"",
     "nodemon": "nodemon -q --exec yarn run"
   },
   "nodemonConfig": {
-    "env": {
-      "DOTENV_CONFIG_PATH": "etc/env/.env.local"
-    },
+    "verbose": true,
     "watch": [
       "package.json",
       "tsconfig.json",
       "etc/env/.env.local",
-      "src"
+      "dist/src"
     ]
   },
   "prettier": {
@@ -91,6 +93,7 @@
     "@swc/core": "^1.3.107",
     "@swc/helpers": "^0.5.3",
     "@swc/jest": "^0.2.34",
+    "@swc-node/register": "^1.8.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/chance": "^1.1.6",
     "@types/compression": "^1.7.5",
@@ -106,6 +109,7 @@
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
+    "concurrently": "^8.2.2",
     "dotenv": "^16.4.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
