@@ -16,12 +16,12 @@ services:
       watch:
         - action: rebuild
           path: ../../package.json
-        - action: sync+restart
+        - action: sync
           path: ../..
           target: /api
     healthcheck:
       <<: *healthcheck
-      test: yarn run healthcheck || exit 1
+      test: node -e "fetch('http://localhost:8000/health').then((r) => console.log(Number(r.status !== 200)))" || exit 1
       interval: 60s
 
   redis:

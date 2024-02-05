@@ -11,9 +11,7 @@
     "watch:build": "yarn build -w >/dev/null",
     "watch:node": "nodemon -x yarn start",
     "test:unit": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-unit.config.ts",
-    "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts",
-    "healthcheck": "node -e \"fetch('http://localhost:8000/health').then((res) => console.log(!Number(res.status === 200)))\"",
-    "nodemon": "nodemon -q --exec yarn run"
+    "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts"
   },
   "nodemonConfig": {
     "verbose": true,

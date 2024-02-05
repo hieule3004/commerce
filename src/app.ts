@@ -78,6 +78,7 @@ function configureMiddleware(app: Application) {
   // custom middleware
   app.use(addCustomHeader);
   app.use(logRequest);
+
   app.use(logData);
 
   // routing

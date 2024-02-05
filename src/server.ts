@@ -7,7 +7,7 @@ import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
 import { nsid } from '@src/utils/nsid';
 
-const bootstrap = async () => {
+void (async function bootstrap() {
   const app = await createApplication();
 
   const logger = app.get('LoggerService') as ApplicationLogger;
@@ -16,19 +16,18 @@ const bootstrap = async () => {
   const isSecure = fromEnv('HTTP_SECURE');
   const server = isSecure
     ? https.createServer(
-      {
-        cert: readFileSync(fromEnv('HTTP_CA_CERT') as string),
-        key: readFileSync(fromEnv('HTTP_CA_KEY') as string),
-        passphrase: fromEnv('HTTP_CA_PASS'),
-        rejectUnauthorized: false,
-      },
-      app,
-    )
+        {
+          cert: readFileSync(fromEnv('HTTP_CA_CERT') as string),
+          key: readFileSync(fromEnv('HTTP_CA_KEY') as string),
+          passphrase: fromEnv('HTTP_CA_PASS'),
+          rejectUnauthorized: false,
+        },
+        app,
+      )
     : http.createServer({}, app);
 
   server.listen(port, () => {
     const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
     logger.log({ id: nsid(), type: 'start', data: { url } } as JsonDto);
   });
-}
-void bootstrap();
+})();
