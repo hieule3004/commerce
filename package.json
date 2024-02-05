@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
+    "lint": "rimraf dist && tsc",
     "start:dev": "nodemon src/server.ts",
     "test:unit": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-unit.config.ts",
     "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts",

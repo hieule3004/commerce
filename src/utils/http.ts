@@ -31,11 +31,10 @@ const ConstantExtract = <T, P extends (typeof ConstantsPrefixes)[number]>(
 /** HTTP status enum. Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status */
 const HttpStatus = ConstantExtract('HTTP_STATUS', (status) => {
   const message = StatusCodes[status];
-  return {
-    status,
-    message,
-    toException: (cause?: Error) => new HttpException(status, message, cause),
-  };
+  const toException = (options: { message?: string; cause?: Error } = {}) =>
+    new HttpException(status, options.message ?? message, options.cause);
+
+  return { status, message, toException };
 });
 
 const HttpHeaders = ConstantExtract('HTTP2_HEADER', (h) => h);
