@@ -1,6 +1,6 @@
 import http from 'node:http';
 import https from 'node:https';
-import { createApplication } from '@src/app';
+import { configureApplication } from '@src/app';
 import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
@@ -8,7 +8,7 @@ import { readFileSync } from '@src/utils/file';
 import { nsid } from '@src/utils/nsid';
 
 void (async function bootstrap() {
-  const app = await createApplication();
+  const app = await configureApplication();
 
   const logger = app.get('LoggerService') as ApplicationLogger;
   const port = fromEnv('PORT');

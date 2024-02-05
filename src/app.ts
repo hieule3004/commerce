@@ -21,7 +21,7 @@ import {
 import { HttpStatus } from '@src/utils/http';
 import { nsid } from '@src/utils/nsid';
 
-async function createApplication() {
+async function configureApplication() {
   const app = Application();
 
   app.set('LoggerService', ApplicationLogger({ level: fromEnv('LOG_LEVEL') }));
@@ -87,4 +87,4 @@ function configureMiddleware(app: Application) {
   app.use(exceptionFilter);
 }
 
-export { createApplication };
+export { configureApplication };
