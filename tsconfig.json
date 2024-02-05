@@ -3,8 +3,10 @@
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "target": "ES2022",
-    "outDir": "dist",
+    "outDir": "./dist",
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
     "lib": [
       "ES2022"
     ],
