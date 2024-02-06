@@ -24,8 +24,10 @@ import { nsid } from '@src/utils/nsid';
 async function configureApplication() {
   const app = Application();
 
-  app.set('LoggerService', ApplicationLogger({ level: fromEnv('LOG_LEVEL') }));
-  app.set('Cache', await Cache());
+  const logger = ApplicationLogger({ level: fromEnv('LOG_LEVEL') });
+  app.set('AppId', nsid());
+  app.set('LoggerService', logger);
+  app.set('Cache', await Cache(app));
 
   configureMiddleware(app);
 
@@ -37,9 +39,9 @@ function configureMiddleware(app: Application) {
 
   app.use(serveStatic('public'));
 
+  app.disable('X-Powered-By'.toLowerCase());
   app.use(cors({}));
   app.use(helmet());
-  // app.disable('X-Powered-By'.toLowerCase());
   app.use(methodOverride());
   app.use(compression());
 

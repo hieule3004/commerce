@@ -5,12 +5,12 @@ import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
-import { nsid } from '@src/utils/nsid';
 
 void (async function bootstrap() {
   const app = await configureApplication();
 
   const logger = app.get('LoggerService') as ApplicationLogger;
+  const id = app.get('AppId') as string;
   const port = fromEnv('PORT');
 
   const isSecure = fromEnv('HTTP_SECURE');
@@ -28,6 +28,6 @@ void (async function bootstrap() {
 
   server.listen(port, () => {
     const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
-    logger.log({ id: nsid(), type: 'start', data: { url } } as JsonDto);
+    logger.log({ id, type: 'start', data: { url } } as JsonDto);
   });
 })();
