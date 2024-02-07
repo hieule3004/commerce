@@ -1,9 +1,4 @@
-import * as tsConfigPaths from 'tsconfig-paths';
-import tsConfig from '../../tsconfig.json';
+import { register } from 'tsconfig-paths';
+import { compilerOptions } from '../../tsconfig.json';
 
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const cleanup = tsConfigPaths.register({
-  baseUrl: './dist',
-  paths: tsConfig.compilerOptions.paths,
-});
+register({ baseUrl: compilerOptions.outDir, paths: compilerOptions.paths });

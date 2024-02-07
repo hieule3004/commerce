@@ -2,7 +2,7 @@ import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
 import { fromEnv } from '@src/config/dotenv';
 import { exceptionFilter } from '@src/config/http/exception.filter';
-import { addCustomHeader } from '@src/config/http/header.middleware';
+import { customHeader } from '@src/config/http/header.middleware';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { configureRoutes } from '@src/route';
@@ -78,7 +78,7 @@ function configureMiddleware(app: Application) {
   );
 
   // custom middleware
-  app.use(addCustomHeader);
+  app.use(customHeader);
   app.use(logRequest);
   app.use(logData);
 
