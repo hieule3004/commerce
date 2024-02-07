@@ -26,7 +26,7 @@ async function configureApplication() {
 
   const logger = ApplicationLogger({ level: fromEnv('LOG_LEVEL') });
   app.set('AppId', nsid());
-  app.set('LoggerService', logger);
+  app.set('Logger', logger);
   app.set('Cache', await Cache(app));
 
   configureMiddleware(app);

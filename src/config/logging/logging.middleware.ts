@@ -7,7 +7,7 @@ import { HttpStatus, StatusCodes } from '@src/utils/http';
 import { ApplicationLogger } from './logging.utils';
 
 const logRequest: RequestHandler = (req, res, next) => {
-  const logger = req.app.get('LoggerService') as ApplicationLogger;
+  const logger = req.app.get('Logger') as ApplicationLogger;
 
   const requestDto = buildRequestLog(req, res, next);
   logger.log(requestDto);
@@ -23,7 +23,7 @@ const logRequest: RequestHandler = (req, res, next) => {
 };
 
 const logData: RequestHandler = function (req, res, next) {
-  const logger = req.app.get('LoggerService') as ApplicationLogger;
+  const logger = req.app.get('Logger') as ApplicationLogger;
   const id = req.headers[X_REQUEST_ID] as string;
   const sid = req.sessionID;
 

@@ -1,18 +1,14 @@
 import http from 'node:http';
 import https from 'node:https';
-import process from 'node:process';
-import { ShutdownSignal } from 'src/common/signal';
 import { configureApplication } from '@src/app';
-import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
 
-
 void (async function bootstrap() {
   const app = await configureApplication();
 
-  const logger = app.get('LoggerService') as ApplicationLogger;
+  const logger = app.get('Logger') as ApplicationLogger;
   const id = app.get('AppId') as string;
   const port = fromEnv('PORT');
 
@@ -31,16 +27,15 @@ void (async function bootstrap() {
 
   server.on('error', (error) => {
     if ((error as { code?: string }).code === 'EADDRINUSE') {
-      server.close();
-      server.listen(port, listenCallback);
+      server.close(serveCallback);
       return;
     }
     throw error;
   });
-  server.listen(port, listenCallback);
+  server.listen(port, serveCallback);
 
-  function listenCallback() {
+  function serveCallback() {
     const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
-    logger.log({ id, type: 'start', data: { url } } as JsonDto);
+    logger.log({ id, type: 'serve', data: { url } });
   }
 })();
