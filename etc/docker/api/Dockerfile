@@ -2,10 +2,10 @@ FROM node:18-bullseye-slim
 
 WORKDIR /api
 
-COPY . .
+ADD package.json yarn.lock /api/
+RUN yarn --pure-lockfile
+ADD . /api
 
 RUN mv -f ./etc/env/.env.docker ./etc/env/.env.local
-
-RUN yarn install
 
 ENTRYPOINT yarn start:dev

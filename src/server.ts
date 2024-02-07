@@ -26,6 +26,10 @@ void (async function bootstrap() {
       )
     : http.createServer({}, app);
 
+  server.on('error', (error) => {
+    if ((error as { code?: string }).code === 'EADDRINUSE') return;
+    throw error;
+  });
   server.listen(port, () => {
     const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
     logger.log({ id, type: 'start', data: { url } } as JsonDto);
