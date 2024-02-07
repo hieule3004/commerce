@@ -4,8 +4,8 @@ import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { Application } from '@src/utils/application';
 
 const Cache = async (app: Application) => {
-  const logger = app.get('Logger') as ApplicationLogger;
   const config = app.get('Config') as Config;
+  const logger = app.get('Logger') as ApplicationLogger;
   const id = app.get('AppId') as string;
 
   const client = createClient({

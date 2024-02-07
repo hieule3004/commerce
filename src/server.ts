@@ -8,10 +8,9 @@ import { readFileSync } from '@src/utils/file';
 void (async function bootstrap() {
   const app = await configureApplication();
 
-  const logger = app.get('Logger') as ApplicationLogger;
   const config = app.get('Config') as Config;
+  const logger = app.get('Logger') as ApplicationLogger;
   const id = app.get('AppId') as string;
-  const port = config.fromEnv('PORT');
 
   const isSecure = config.fromEnv('HTTP_SECURE');
   const server = isSecure
@@ -26,11 +25,9 @@ void (async function bootstrap() {
       )
     : http.createServer({}, app);
 
+  const port = config.fromEnv('PORT');
   server.on('error', (error) => {
-    if ((error as { code?: string }).code === 'EADDRINUSE') {
-      server.close(serveCallback);
-      return;
-    }
+    if ((error as { code?: string }).code === 'EADDRINUSE') return server.close(serveCallback);
     throw error;
   });
   server.listen(port, serveCallback);
