@@ -1,10 +1,13 @@
 import http from 'node:http';
 import https from 'node:https';
+import process from 'node:process';
+import { ShutdownSignal } from 'src/common/signal';
 import { configureApplication } from '@src/app';
 import { JsonDto } from '@src/common/dtos/json.dto';
 import { fromEnv } from '@src/config/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
+
 
 void (async function bootstrap() {
   const app = await configureApplication();
@@ -27,11 +30,17 @@ void (async function bootstrap() {
     : http.createServer({}, app);
 
   server.on('error', (error) => {
-    if ((error as { code?: string }).code === 'EADDRINUSE') return;
+    if ((error as { code?: string }).code === 'EADDRINUSE') {
+      server.close();
+      server.listen(port, listenCallback);
+      return;
+    }
     throw error;
   });
-  server.listen(port, () => {
+  server.listen(port, listenCallback);
+
+  function listenCallback() {
     const url = `${isSecure ? 'https' : 'http'}://localhost:${port}`;
     logger.log({ id, type: 'start', data: { url } } as JsonDto);
-  });
+  }
 })();
