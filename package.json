@@ -6,7 +6,7 @@
     "clean": "rimraf dist",
     "build": "tsc --project tsconfig.build.json",
     "prestart": "until [ -f ./dist/etc/register/tsconfig-paths.js ]; do sleep 0.1; done",
-    "start": "DOTENV_CONFIG_PATH=etc/env/.env.local node -r @swc-node/register -r ./dist/etc/register/tsconfig-paths.js -r dotenv/config ./dist/src/server.js",
+    "start": "DOTENV_CONFIG_PATH=etc/env/.env.local node -r @swc-node/register -r ./dist/etc/register/tsconfig-paths.js ./dist/src/server.js",
     "start:dev": "concurrently -k -p none yarn:watch:*",
     "watch:build": "yarn build -w >/dev/null",
     "watch:node": "nodemon -x yarn start",

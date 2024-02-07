@@ -1,16 +1,13 @@
 import { RedisClientType, createClient } from 'redis';
-import { Config } from '@src/config/env/env.service';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
-import { Application } from '@src/utils/application';
 
-const Cache = async (app: Application) => {
-  const config = app.get('Config') as Config;
-  const logger = app.get('Logger') as ApplicationLogger;
-  const id = app.get('AppId') as string;
+type CacheOptions = Parameters<typeof createClient>[0];
+type LoggerOptions = { logger: ApplicationLogger; appId: string };
 
-  const client = createClient({
-    url: config.fromEnv('REDIS_URL'),
-  });
+const Cache = async (options: CacheOptions, loggerOptions: LoggerOptions) => {
+  const { logger, appId: id } = loggerOptions;
+
+  const client = createClient(options);
 
   client.on('connect', () =>
     logger.log({ id, type: 'cache', data: { client: 'redis', message: 'connected' } }),

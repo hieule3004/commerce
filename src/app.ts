@@ -1,6 +1,6 @@
 import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
-import { Config } from '@src/config/env/env.service';
+import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
@@ -24,12 +24,15 @@ import { nsid } from '@src/utils/nsid';
 async function configureApplication() {
   const app = Application();
 
-  const config = Config();
+  const appId = nsid();
+  const config = Config({ logger: ApplicationLogger() });
   const logger = ApplicationLogger({ level: config.fromEnv('LOG_LEVEL') });
-  app.set('AppId', nsid());
+  const cache = await Cache({ url: config.fromEnv('REDIS_URL') }, { logger, appId });
+
+  app.set('AppId', appId);
   app.set('Config', config);
   app.set('Logger', logger);
-  app.set('Cache', await Cache(app));
+  app.set('Cache', cache);
 
   configureMiddleware(app);
 
