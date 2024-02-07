@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 import { configureApplication } from '@src/app';
-import { fromEnv } from '@src/config/dotenv';
+import { fromEnv } from '@src/config/env/env.service';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { readFileSync } from '@src/utils/file';
 

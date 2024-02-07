@@ -1,6 +1,6 @@
 import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
-import { fromEnv } from '@src/config/dotenv';
+import { fromEnv } from '@src/config/env/env.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';

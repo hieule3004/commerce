@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { z } from 'zod';
 import { Loglevels } from '@src/config/logging/logging.constant';
 import { convert } from '@src/utils/math/convert';
@@ -48,7 +47,7 @@ const cookieSchema = z.object({
 
 const redisSchema = z.object({
   REDIS_URL: z.string().url(),
-})
+});
 
 /** DotEnv schema */
 const dotEnvValidator = systemSchema
@@ -61,19 +60,4 @@ const dotEnvValidator = systemSchema
 /** DotEnv type */
 type DotEnv = z.infer<typeof dotEnvValidator>;
 
-const parseEnv = (env: unknown) => {
-  const result = dotEnvValidator.safeParse(env);
-  if (!result.success) {
-    console.error(result.error.format());
-    process.exit(1);
-  }
-  return result.data;
-};
-
-/** DotEnv object */
-const dotEnv = parseEnv(process.env);
-
-/** Get environment variable */
-const fromEnv = <K extends keyof DotEnv>(key: K) => dotEnv[key];
-
-export { DotEnv, fromEnv, parseEnv };
+export { DotEnv, dotEnvValidator };

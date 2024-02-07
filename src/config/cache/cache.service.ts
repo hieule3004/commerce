@@ -1,5 +1,5 @@
 import { RedisClientType, createClient } from 'redis';
-import { fromEnv } from '@src/config/dotenv';
+import { fromEnv } from '@src/config/env/env.service';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
 import { Application } from '@src/utils/application';
 
