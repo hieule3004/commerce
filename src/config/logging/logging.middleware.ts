@@ -1,6 +1,6 @@
 import { major, minVersion } from 'semver';
 import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
-import { fromEnv } from '@src/config/env/env.service';
+import { Config } from '@src/config/env/env.service';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
 import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/utils/application';
 import { HttpStatus, StatusCodes } from '@src/utils/http';
@@ -38,12 +38,15 @@ const logData: RequestHandler = function (req, res, next) {
   next();
 };
 
-const isV5 = () => major(minVersion(fromEnv('npm_package_dependencies_express'))!) === 5;
+const isV5 = (env: Config) =>
+  major(minVersion(env.fromEnv('npm_package_dependencies_express'))!) === 5;
 
 function buildRequestLog(req: Request, res: Response, next: NextFunction): JsonDto {
+  const env = req.app.get('Config') as Config;
+
   const id = req.headers[X_REQUEST_ID] as string;
 
-  const v5 = isV5();
+  const v5 = isV5(env);
   const routerName = v5 ? 'router' : '_router';
   const layerHandleProp = v5 ? 'handleRequest' : 'handle_request';
   const baseHandleName = v5 ? 'handle' : 'bound dispatch';

@@ -9,6 +9,8 @@ services:
     build:
       context: ../..
       dockerfile: ./etc/docker/api/Dockerfile
+      args:
+        DOTENV_CONFIG_PATH: ./etc/env/.env.docker
       no_cache: false
     ports:
       - '8000:8000'
