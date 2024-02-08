@@ -1,6 +1,6 @@
-import { StatusCodes } from '@src/utils/http';
+import { StatusCodes } from './http';
 
-class HttpException extends Error {
+export class HttpException extends Error {
   constructor(
     readonly status: number,
     readonly response?: string | object,
@@ -17,5 +17,3 @@ class HttpException extends Error {
     return this.response;
   }
 }
-
-export { HttpException };

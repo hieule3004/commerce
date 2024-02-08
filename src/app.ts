@@ -18,7 +18,7 @@ import {
   session,
   urlencoded,
 } from '@src/utils/application/middleware';
-import { HttpStatus } from '@src/utils/http';
+import { HttpStatus } from '@src/utils/http/http';
 import { nsid } from '@src/utils/nsid';
 
 async function configureApplication() {

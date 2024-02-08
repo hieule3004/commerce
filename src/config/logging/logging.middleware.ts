@@ -3,7 +3,7 @@ import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
 import { Config } from '@src/config/env/config.service';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
 import { Layer, NextFunction, Request, RequestHandler, Response } from '@src/utils/application';
-import { HttpStatus, StatusCodes } from '@src/utils/http';
+import { HttpStatus, StatusCodes } from '@src/utils/http/http';
 import { ApplicationLogger } from './logging.utils';
 
 const logRequest: RequestHandler = (req, res, next) => {
