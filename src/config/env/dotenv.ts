@@ -31,17 +31,18 @@ const apiSchema = z.object({
 
 const httpSecureSchema = z
   .object({
-    HTTP_SECURE: z
+    API_HTTP_SECURE: z
       .enum(['true', 'false'])
       .transform((s) => s === 'true')
       .default('false'),
-    HTTP_CA_CERT: z.string().min(1).optional(),
-    HTTP_CA_KEY: z.string().min(1).optional(),
-    HTTP_CA_PASS: z.string().min(1).optional(),
+    API_HTTP_CA_CERT: z.string().min(1).optional(),
+    API_HTTP_CA_KEY: z.string().min(1).optional(),
+    API_HTTP_CA_PASS: z.string().min(1).optional(),
   })
-  .refine((e) => !e.HTTP_SECURE || (e.HTTP_CA_CERT && e.HTTP_CA_KEY && e.HTTP_CA_PASS), {
-    message: 'Missing variables when feature is on: HTTP_SECURE',
-  });
+  .refine(
+    (e) => !e.API_HTTP_SECURE || (e.API_HTTP_CA_CERT && e.API_HTTP_CA_KEY && e.API_HTTP_CA_PASS),
+    { message: 'Missing variables when feature is on: HTTP_SECURE' },
+  );
 
 const redisSchema = z.object({
   REDIS_URL: z.string().url(),

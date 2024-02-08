@@ -12,13 +12,13 @@ void (async function bootstrap() {
   const logger = app.get('Logger') as ApplicationLogger;
   const id = app.get('AppId') as string;
 
-  const isSecure = config.fromEnv('HTTP_SECURE');
+  const isSecure = config.fromEnv('API_HTTP_SECURE');
   const server = isSecure
     ? https.createServer(
         {
-          cert: readFileSync(config.fromEnv('HTTP_CA_CERT') as string),
-          key: readFileSync(config.fromEnv('HTTP_CA_KEY') as string),
-          passphrase: config.fromEnv('HTTP_CA_PASS'),
+          cert: readFileSync(config.fromEnv('API_HTTP_CA_CERT') as string),
+          key: readFileSync(config.fromEnv('API_HTTP_CA_KEY') as string),
+          passphrase: config.fromEnv('API_HTTP_CA_PASS'),
           rejectUnauthorized: false,
         },
         app,
