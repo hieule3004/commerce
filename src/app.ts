@@ -20,13 +20,17 @@ import {
 } from '@src/utils/application/middleware';
 import { HttpStatus } from '@src/utils/http';
 import { nsid } from '@src/utils/nsid';
+import { X_POWERED_BY } from '@src/config/http/http.constant';
 
 async function configureApplication() {
   const app = Application();
 
   const appId = nsid();
   const config = Config({ logger: ApplicationLogger() });
-  const logger = ApplicationLogger({ level: config.fromEnv('LOG_LEVEL') });
+  const logger = ApplicationLogger({
+    level: config.fromEnv('LOG_LEVEL'),
+    defaultMeta: { name: config.fromEnv('npm_package_name') }
+  });
   const cache = await Cache({ url: config.fromEnv('REDIS_URL') }, { logger, appId });
 
   app.set('AppId', appId);
@@ -45,7 +49,7 @@ function configureMiddleware(app: Application) {
 
   app.use(serveStatic('public'));
 
-  app.disable('X-Powered-By'.toLowerCase());
+  app.disable(X_POWERED_BY.toLowerCase());
   app.use(cors({}));
   app.use(helmet());
   app.use(methodOverride());
