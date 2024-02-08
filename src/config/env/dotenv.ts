@@ -13,12 +13,16 @@ const serverSchema = z.object({
   LOG_LEVEL: z.enum(Loglevels).default('INFO'),
 });
 
-const httpSchema = z.object({
-  HTTP_REQUEST_SIZE_LIMIT: z
+const apiSchema = z.object({
+  API_SESSION_NAME: z.string().min(1),
+  API_SESSION_KEYS: z.string().transform((s) => s.split(',')),
+  API_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
+
+  API_REQUEST_SIZE_LIMIT: z
     .union([z.string().regex(/^\d+[kmgtp]?b$/i), z.number().int().positive()])
     .default(convert(5, 'MB').to('B')),
-  HTTP_REQUEST_RATE_LIMIT: z.coerce.number().int().positive().default(100),
-  HTTP_REQUEST_RATE_LIMIT_WINDOW_MS: z.coerce
+  API_REQUEST_RATE_LIMIT: z.coerce.number().int().positive().default(100),
+  API_REQUEST_RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
     .int()
     .positive()
@@ -39,12 +43,6 @@ const httpSecureSchema = z
     message: 'Missing variables when feature is on: HTTP_SECURE',
   });
 
-const cookieSchema = z.object({
-  API_SESSION_NAME: z.string().min(1),
-  API_SESSION_KEYS: z.string().transform((s) => s.split(',')),
-  API_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),
-});
-
 const redisSchema = z.object({
   REDIS_URL: z.string().url(),
 });
@@ -52,9 +50,8 @@ const redisSchema = z.object({
 /** DotEnv schema */
 const dotEnvValidator = systemSchema
   .and(serverSchema)
-  .and(httpSchema)
+  .and(apiSchema)
   .and(httpSecureSchema)
-  .and(cookieSchema)
   .and(redisSchema);
 
 /** DotEnv type */

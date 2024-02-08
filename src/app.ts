@@ -56,7 +56,7 @@ function configureMiddleware(app: Application) {
   app.use(compression());
 
   app.set('query parser', 'extended');
-  const limit = config.fromEnv('HTTP_REQUEST_SIZE_LIMIT');
+  const limit = config.fromEnv('API_REQUEST_SIZE_LIMIT');
   app.use(json({ limit }));
   app.use(urlencoded({ extended: true, limit }));
   app.use(cookieParser(config.fromEnv('API_SESSION_KEYS')));
@@ -81,8 +81,8 @@ function configureMiddleware(app: Application) {
 
   app.use(
     rateLimit({
-      windowMs: config.fromEnv('HTTP_REQUEST_RATE_LIMIT_WINDOW_MS'),
-      limit: config.fromEnv('HTTP_REQUEST_RATE_LIMIT'),
+      windowMs: config.fromEnv('API_REQUEST_RATE_LIMIT_WINDOW_MS'),
+      limit: config.fromEnv('API_REQUEST_RATE_LIMIT'),
       handler: () => {
         throw HttpStatus.TOO_MANY_REQUESTS.toException();
       },
