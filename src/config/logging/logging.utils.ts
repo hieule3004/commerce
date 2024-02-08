@@ -1,7 +1,7 @@
 import util from 'node:util';
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { UniformLogger } from '@src/utils/logging';
+import { UniformLogger } from '@src/utils/logging/logging';
 import { redact } from '@src/utils/serialisation';
 import { DEFAULT_LOG_LEVEL, Loglevel, Loglevels, colors, levels } from './logging.constant';
 
