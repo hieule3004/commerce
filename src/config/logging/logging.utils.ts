@@ -1,34 +1,11 @@
 import util from 'node:util';
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { UniformLogger } from '@src/utils/logging';
 import { redact } from '@src/utils/serialisation';
 import { DEFAULT_LOG_LEVEL, Loglevel, Loglevels, colors, levels } from './logging.constant';
 
 const { cli, combine, errors, json, logstash, printf, splat, timestamp } = winston.format;
-
-/**---- Logger interface ----**/
-
-type ILogger<Levels extends string> = {
-  [K in 'log' | Lowercase<Levels>]: (message: unknown, ...optionalParams: unknown[]) => void;
-};
-
-const UniformLogger = (loggerOptions?: winston.LoggerOptions) => {
-  const logger = winston.createLogger(loggerOptions);
-
-  const _log =
-    (level: Loglevel): ILogger<Loglevel>[Lowercase<Loglevel>] =>
-    (message, ...optionalParams) => {
-      if (message !== undefined) logger.log(level, { message, splat: optionalParams });
-    };
-
-  return Loglevels.reduce(
-    (target, loglevel) => {
-      target[loglevel.toLowerCase() as Lowercase<typeof loglevel>] = _log(loglevel);
-      return target;
-    },
-    { log: _log('INFO') } as ILogger<Loglevel>,
-  );
-};
 
 /**---- Logger options ----**/
 
@@ -107,17 +84,16 @@ const createLoggerOptions = (options?: winston.LoggerOptions) => ({
   ...options,
 });
 
+const logLevelMethodMap = Loglevels.reduce(
+  (t, l) => Object.assign(t, { [l]: l.toLowerCase() }),
+  {} as { [K in Loglevel]: Lowercase<K> },
+);
+
 type LoggerOptions = winston.LoggerOptions;
 
 /** default application logger */
-const ApplicationLogger = (options?: LoggerOptions) => UniformLogger(createLoggerOptions(options));
+const ApplicationLogger = (options?: LoggerOptions) =>
+  UniformLogger(logLevelMethodMap, () => winston.createLogger(createLoggerOptions(options)));
 type ApplicationLogger = ReturnType<typeof ApplicationLogger>;
 
-export {
-  ILogger,
-  LoggerOptions,
-  ApplicationLogger,
-  Transports,
-  UniformLogger,
-  createLoggerOptions,
-};
+export { LoggerOptions, ApplicationLogger, Transports, createLoggerOptions };
