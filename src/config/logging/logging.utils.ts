@@ -93,7 +93,9 @@ type LoggerOptions = winston.LoggerOptions;
 
 /** default application logger */
 const ApplicationLogger = (options?: LoggerOptions) =>
-  UniformLogger(logLevelMethodMap, () => winston.createLogger(createLoggerOptions(options)));
+  UniformLogger(logLevelMethodMap, 'INFO', () =>
+    winston.createLogger(createLoggerOptions(options)),
+  );
 type ApplicationLogger = ReturnType<typeof ApplicationLogger>;
 
 export { LoggerOptions, ApplicationLogger, Transports, createLoggerOptions };

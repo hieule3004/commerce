@@ -1,14 +1,20 @@
 import { Cache } from '@src/config/cache/cache.service';
-import { Application } from '@src/utils/application';
+import { Database } from '@src/config/database/database.service';
+import { Application, RequestHandler } from '@src/utils/application';
 
 export function configureRoutes(app: Application) {
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  app.route('/redis').post(async (req, res) => {
+  app.route('/pg').post((async (req, res) => {
+    const db = app.get('Database') as Database;
+    const { command, args } = req.body as { command: string; args?: unknown[] };
+    const result = await db.query(command, { replacements: args!, type: command.split(' ')[0]! });
+    res.json({ result });
+  }) as RequestHandler);
+  app.route('/redis').post((async (req, res) => {
     const cache = app.get('Cache') as Cache;
     const { command } = req.body as { command: string };
     const result = await cache.sendCommand(command.split(' '));
     res.json({ result });
-  });
+  }) as RequestHandler);
   app.route('/test/:id/sub/:name').all((req, res) => {
     res.json({ params: req.params, query: req.query, body: req.body as unknown });
   });

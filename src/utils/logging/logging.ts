@@ -11,6 +11,7 @@ const UniformLogger = <
   LogLevel extends Extract<keyof LogLevelMap, string>,
 >(
   logLevelMap: LogLevelMap,
+  defaultLogLevel: LogLevel,
   createLogger: () => { level: string; log: (level: string, message: unknown) => void },
 ) => {
   const logger = createLogger();
@@ -26,7 +27,7 @@ const UniformLogger = <
       target[methodName as LogLevelMap[LogLevel]] = _log(loglevel as LogLevel);
       return target;
     },
-    { log: _log(logger.level as LogLevel) } as ILogger<LogLevelMap>,
+    { log: _log(defaultLogLevel) } as ILogger<LogLevelMap>,
   );
 };
 

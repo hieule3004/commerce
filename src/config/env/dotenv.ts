@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Loglevels } from '@src/config/logging/logging.constant';
 import { convert } from '@src/utils/math/convert';
 
+
 const systemSchema = z.object({
   npm_package_name: z.string().min(1),
 
@@ -47,12 +48,20 @@ const redisSchema = z.object({
   REDIS_URL: z.string().url(),
 });
 
+const pgSchema = z.object({
+  POSTGRES_PORT: z.coerce.number().positive(),
+  POSTGRES_DB: z.string(),
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
+});
+
 /** DotEnv schema */
 const dotEnvValidator = systemSchema
   .and(serverSchema)
   .and(apiSchema)
   .and(httpSecureSchema)
-  .and(redisSchema);
+  .and(redisSchema)
+  .and(pgSchema);
 
 /** DotEnv type */
 type DotEnv = z.infer<typeof dotEnvValidator>;

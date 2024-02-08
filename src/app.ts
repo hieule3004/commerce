@@ -1,5 +1,6 @@
 import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
+import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
@@ -26,11 +27,27 @@ async function configureApplication() {
   const config = Config({ logger: ApplicationLogger() });
   const logger = ApplicationLogger({
     level: config.fromEnv('LOG_LEVEL'),
-    defaultMeta: { name: config.fromEnv('npm_package_name') }
+    defaultMeta: { name: config.fromEnv('npm_package_name') },
   });
   const cache = await Cache({ url: config.fromEnv('REDIS_URL') }, { logger, appId });
+  const database = await Database(
+    {
+      dialect: 'postgres',
+      port: config.fromEnv('POSTGRES_PORT'),
+      database: config.fromEnv('POSTGRES_DB'),
+      username: config.fromEnv('POSTGRES_USER'),
+      password: config.fromEnv('POSTGRES_PASSWORD'),
+    },
+    { logger, appId }
+  );
 
-  const settings = { AppId: appId, Config: config, Logger: logger, Cache: cache } as const;
+  const settings = {
+    AppId: appId,
+    Config: config,
+    Logger: logger,
+    Cache: cache,
+    Database: database,
+  } as const;
 
   const app = Application();
   for (const [key, value] of Object.entries(settings)) app.set(key, value);
