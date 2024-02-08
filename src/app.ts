@@ -33,12 +33,13 @@ async function configureApplication() {
   const database = await Database(
     {
       dialect: 'postgres',
+      host: config.fromEnv('POSTGRES_HOST'),
       port: config.fromEnv('POSTGRES_PORT'),
       database: config.fromEnv('POSTGRES_DB'),
       username: config.fromEnv('POSTGRES_USER'),
       password: config.fromEnv('POSTGRES_PASSWORD'),
     },
-    { logger, appId }
+    { logger, appId },
   );
 
   const settings = {

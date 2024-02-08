@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Loglevels } from '@src/config/logging/logging.constant';
 import { convert } from '@src/utils/math/convert';
 
-
 const systemSchema = z.object({
   npm_package_name: z.string().min(1),
 
@@ -49,6 +48,7 @@ const redisSchema = z.object({
 });
 
 const pgSchema = z.object({
+  POSTGRES_HOST: z.string().default('localhost'),
   POSTGRES_PORT: z.coerce.number().positive(),
   POSTGRES_DB: z.string(),
   POSTGRES_USER: z.string(),

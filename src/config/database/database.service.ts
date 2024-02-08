@@ -12,7 +12,7 @@ const Database = async (options: DatabaseOptions, loggerOptions: LoggerOptions) 
     ...options,
     ['logging']: (sql, timing) =>
       // TODO: get id from context
-      logger.debug({ id: nsid(), type: 'query', data: { sql, timing } }),
+      logger.trace({ id: nsid(), type: 'query', data: { sql, timing } }),
   });
   await client.authenticate({ logging: false }).then(
     () => logger.log({ id, type: 'database', data: { client: 'pg', message: 'connected' } }),
