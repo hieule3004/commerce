@@ -10,4 +10,4 @@ ADD . /api
 
 RUN mv -f ${DOTENV_CONFIG_PATH} ./etc/env/.env.local
 
-ENTRYPOINT yarn start:dev
+ENTRYPOINT yarn clean && yarn start:dev

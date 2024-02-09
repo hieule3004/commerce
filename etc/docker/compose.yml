@@ -1,3 +1,5 @@
+name: commerce
+
 x-healthcheck: &healthcheck
   interval: 10s
   timeout: 5s
@@ -42,6 +44,8 @@ services:
       - "5432:5432"
     env_file:
       - ../env/.env.docker
+    volumes:
+      - ./healthcheck/postgres.sh:/postgres.sh
     healthcheck:
       <<: *healthcheck
-      test: pg_isready || exit 1
+      test: ./postgres.sh || exit 1
