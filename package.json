@@ -5,13 +5,13 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc --project tsconfig.build.json",
-    "prestart": "until [ -f ./dist/etc/register/tsconfig-paths.js ]; do sleep 0.1; done",
-    "start": "DOTENV_CONFIG_PATH=etc/env/.env.local node -r @swc-node/register -r ./dist/etc/register/tsconfig-paths.js ./dist/src/server.js",
+    "prestart": "until [ -f ./dist/etc/scripts/tsconfig-paths.js ]; do sleep 0.1; done",
+    "start": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} node -r @swc-node/register -r ./dist/etc/scripts/tsconfig-paths.js ./dist/src/server.js",
     "start:dev": "concurrently -k -p none yarn:watch:*",
     "watch:build": "yarn build -w >/dev/null",
     "watch:node": "nodemon -x yarn start",
-    "test:unit": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-unit.config.ts",
-    "test:e2e": "DOTENV_CONFIG_PATH=etc/env/.env.local jest --config test/setup/jest-e2e.config.ts"
+    "test:unit": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} jest --config test/setup/jest-unit.config.ts",
+    "test:e2e": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} jest --config test/setup/jest-e2e.config.ts"
   },
   "nodemonConfig": {
     "verbose": true,

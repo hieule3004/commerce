@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-docker compose -f "./etc/docker/compose.yml" watch
+project_root="."
+docker compose -f "${project_root}/etc/docker/compose.yml" watch

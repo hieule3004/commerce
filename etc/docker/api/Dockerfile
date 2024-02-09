@@ -1,6 +1,4 @@
-FROM node:18-bullseye-slim
-
-ARG DOTENV_CONFIG_PATH
+FROM node:18-bullseye-slim as builder
 
 WORKDIR /api
 
@@ -8,6 +6,8 @@ ADD package.json yarn.lock /api/
 RUN yarn --pure-lockfile
 ADD . /api
 
-RUN mv -f ${DOTENV_CONFIG_PATH} ./etc/env/.env.local
+FROM builder
 
-ENTRYPOINT yarn clean && yarn start:dev
+ARG ENV_PATH
+
+ENTRYPOINT yarn start:dev

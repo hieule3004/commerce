@@ -23,12 +23,11 @@ services:
         - action: sync
           path: ../..
           target: /api
-    env_file:
-      - ../env/.env.docker
+    environment:
+      ENV_PATH: ./etc/env/.env.docker
     healthcheck:
       <<: *healthcheck
-      test: ./etc/docker/healthcheck/api.sh || exit 1
-      interval: 60s
+      test: exit $(node ./dist/etc/scripts/healthcheck.js)
 
   redis:
     container_name: redis
