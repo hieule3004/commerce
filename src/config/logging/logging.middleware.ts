@@ -71,7 +71,7 @@ const dryRunRoute: RequestHandler = (req, res, next) => {
 
 function isIgnoredEndpoint(req: Request) {
   const path = (req.route as { path?: string })?.path;
-  return path && ignores[path]?.includes(req.method as keyof typeof HttpMethod);
+  return path && ignores[path]?.includes(req.method.toUpperCase() as keyof typeof HttpMethod);
 }
 
 function buildRequestLog(req: Request): JsonDto {
