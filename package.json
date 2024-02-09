@@ -129,7 +129,7 @@
     "typescript": "^5.3.3"
   },
   "resolutions": {
-    "**/@swc/types": ">=0.1",
-    "**/semver": "*"
+    "semver": "*",
+    "**/@swc/types": ">=0.1"
   }
 }

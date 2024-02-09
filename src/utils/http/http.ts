@@ -4,7 +4,7 @@ import { HttpException } from './exception';
 
 const constants = http2.constants;
 
-const ConstantsPrefixes = ['HTTP2_HEADER', 'HTTP_STATUS'] as const;
+const ConstantsPrefixes = ['HTTP2_HEADER', 'HTTP2_METHOD', 'HTTP_STATUS'] as const;
 
 /** HTTP status code to message map. Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status */
 const StatusCodes = Object.freeze(http.STATUS_CODES);
@@ -37,6 +37,8 @@ const HttpStatus = ConstantExtract('HTTP_STATUS', (status) => {
   return { status, message, toException };
 });
 
-const HttpHeaders = ConstantExtract('HTTP2_HEADER', (h) => h);
+const HttpMethod = ConstantExtract('HTTP2_METHOD', (m) => m);
 
-export { HttpHeaders, HttpStatus, StatusCodes };
+const HttpHeader = ConstantExtract('HTTP2_HEADER', (h) => h);
+
+export { HttpHeader, HttpMethod, HttpStatus, StatusCodes };
