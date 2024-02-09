@@ -9,11 +9,12 @@ const systemSchema = z.object({
 });
 
 const serverSchema = z.object({
-  PORT: z.coerce.number().int().positive(),
   LOG_LEVEL: z.enum(Loglevels).default('INFO'),
 });
 
 const apiSchema = z.object({
+  API_PORT: z.coerce.number().int().positive(),
+
   API_SESSION_NAME: z.string().min(1),
   API_SESSION_KEYS: z.string().transform((s) => s.split(',')),
   API_SESSION_EXPIRY_MS: z.coerce.number().int().positive().default(convert(1, 'h').to('ms')),

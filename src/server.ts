@@ -25,7 +25,7 @@ void (async function bootstrap() {
       )
     : http.createServer({}, app);
 
-  const port = config.fromEnv('PORT');
+  const port = config.fromEnv('API_PORT');
   server.on('error', (error) => {
     if ((error as { code?: string }).code === 'EADDRINUSE') return server.close(serveCallback);
     throw error;
