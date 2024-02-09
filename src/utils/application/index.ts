@@ -32,6 +32,8 @@ export { Layer, Application };
 
 export {
   ErrorRequestHandler,
+  IRouter,
+  IRouterMatcher,
   RequestHandler,
   Request,
   Response,

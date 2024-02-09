@@ -23,4 +23,6 @@ const Database = async (options: DatabaseOptions, loggerOptions: LoggerOptions) 
 };
 type Database = Awaited<ReturnType<typeof Database>>;
 
-export { Database };
+const DataTypes = sequelize.DataTypes;
+
+export { DataTypes, Database };
