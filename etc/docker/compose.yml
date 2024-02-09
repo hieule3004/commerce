@@ -23,9 +23,11 @@ services:
         - action: sync
           path: ../..
           target: /api
+    env_file:
+      - ../env/.env.docker
     healthcheck:
       <<: *healthcheck
-      test: node -e "fetch('http://localhost:8000/health').then((r) => console.log(Number(r.status !== 200)))" || exit 1
+      test: ./etc/docker/healthcheck/api.sh || exit 1
       interval: 60s
 
   redis:
@@ -45,7 +47,7 @@ services:
     env_file:
       - ../env/.env.docker
     volumes:
-      - ./healthcheck/postgres.sh:/postgres.sh
+      - ./healthcheck/postgres.sh:/healthcheck.sh
     healthcheck:
       <<: *healthcheck
-      test: ./postgres.sh || exit 1
+      test: ./healthcheck.sh || exit 1
