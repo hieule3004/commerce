@@ -9,18 +9,9 @@
     "start": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} node -r @swc-node/register -r ./dist/etc/scripts/tsconfig-paths.js ./dist/src/server.js",
     "start:dev": "concurrently -k -p none yarn:watch:*",
     "watch:build": "yarn build -w >/dev/null",
-    "watch:node": "nodemon -x yarn start",
+    "watch:node": "nodemon -w package.json -w tsconfig.json -w dist/src -w ${ENV_PATH:-etc/env/.env.local} -V -x yarn start",
     "test:unit": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} jest --config test/setup/jest-unit.config.ts",
     "test:e2e": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} jest --config test/setup/jest-e2e.config.ts"
-  },
-  "nodemonConfig": {
-    "verbose": true,
-    "watch": [
-      "package.json",
-      "tsconfig.json",
-      "etc/env/.env.local",
-      "dist/src"
-    ]
   },
   "prettier": {
     "importOrder": [
