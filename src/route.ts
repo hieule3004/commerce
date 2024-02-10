@@ -1,6 +1,7 @@
 import { Cache } from '@src/config/cache/cache.service';
-import { Database } from '@src/config/database/database.service';
-import { Application, RequestHandler } from '@src/utils/application';
+import { VersionInfo } from '@src/config/version';
+import { Application, Layer, RequestHandler } from '@src/utils/application';
+import { Database } from '@src/utils/database';
 
 export function configureRoutes(app: Application) {
   app.route('/pg').post((async (req, res) => {
@@ -20,14 +21,6 @@ export function configureRoutes(app: Application) {
     );
   }) as RequestHandler);
 
-  app.route('/test/:id/sub/:name').all((req, res) => {
-    res.json({ params: req.params, query: req.query, body: req.body as unknown });
-  });
-
-  app.route('/hello/:idx').all((_, res) => {
-    res.json({ hello: 'world' });
-  });
-
   app.route('/error').get(() => {
     throw new Error('error');
   });
@@ -37,14 +30,16 @@ export function configureRoutes(app: Application) {
   });
 
   app.route('/').get((req, res) => {
+    const { propName } = req.app.get('VersionInfo') as VersionInfo;
+
     const baseURL = `${req.protocol}://${req.headers.host}`;
-    res.status(200).json({
-      data: {
-        links: {
-          self: baseURL,
-          error: `${baseURL}/error`,
-        },
-      },
-    });
+    const data = (req.app[propName.router] as unknown as Layer).stack
+      .filter((layer) => layer.name === propName.baseHandle)
+      .map((layer) => ({
+        method: Object.keys(layer.route!.methods)[0]!.toUpperCase(),
+        path: `${baseURL}${layer.route!.path}`,
+      }));
+
+    res.status(200).json({ data });
   });
 }

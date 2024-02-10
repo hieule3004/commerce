@@ -1,11 +1,15 @@
 import RedisStore from 'connect-redis';
 import { Cache } from '@src/config/cache/cache.service';
+import { configureModelRoutes } from '@src/config/crud';
+import { setupDatabase } from '@src/config/database/database.config';
 import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { VersionInfo } from '@src/config/version';
+import { configureModels } from '@src/model';
 import { configureRoutes } from '@src/route';
 import { Application, serveStatic } from '@src/utils/application';
 import {
@@ -29,7 +33,13 @@ async function configureApplication() {
     level: config.fromEnv('LOG_LEVEL'),
     defaultMeta: { name: config.fromEnv('npm_package_name') },
   });
-  const cache = await Cache({ url: config.fromEnv('REDIS_URL') }, { logger, appId });
+  const cache = await Cache(
+    {
+      url: config.fromEnv('REDIS_URL'),
+      pingInterval: 10_000,
+    },
+    { logger, appId },
+  );
   const database = await Database(
     {
       dialect: 'postgres',
@@ -53,6 +63,9 @@ async function configureApplication() {
   const app = Application();
   for (const [key, value] of Object.entries(settings)) app.set(key, value);
 
+  configureModels(database);
+  await setupDatabase(database);
+
   configureMiddleware(app);
 
   return app;
@@ -61,6 +74,8 @@ async function configureApplication() {
 function configureMiddleware(app: Application) {
   const config = app.get('Config') as Config;
   const cache = app.get('Cache') as Cache;
+
+  app.set('VersionInfo', VersionInfo(config.fromEnv('npm_package_dependencies_express')));
 
   app.use(serveStatic('public'));
 
@@ -111,6 +126,7 @@ function configureMiddleware(app: Application) {
   app.use(logData);
 
   // routing
+  configureModelRoutes(app);
   configureRoutes(app);
 
   // exception filter

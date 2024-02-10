@@ -1,18 +1,16 @@
-import sequelize from 'sequelize';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import * as utils from '@src/utils/database';
 import { nsid } from '@src/utils/nsid';
 
-type DatabaseOptions = sequelize.Options;
 type LoggerOptions = { logger: ApplicationLogger; appId: string };
 
-const Database = async (options: DatabaseOptions, loggerOptions: LoggerOptions) => {
+const Database = async (options: utils.Options, loggerOptions: LoggerOptions) => {
   const { logger, appId: id } = loggerOptions;
 
-  const client = new sequelize.Sequelize({
+  const client = new utils.Database({
     ...options,
-    ['logging']: (sql, timing) =>
-      // TODO: get id from context
-      logger.trace({ id: nsid(), type: 'query', data: { sql, timing } }),
+    // TODO: get id from context
+    ['logging']: (sql) => logger.trace({ id: nsid(), type: 'query', data: { sql } }),
   });
   await client.authenticate({ logging: false }).then(
     () => logger.log({ id, type: 'database', data: { client: 'pg', message: 'connected' } }),
@@ -21,8 +19,5 @@ const Database = async (options: DatabaseOptions, loggerOptions: LoggerOptions) 
   );
   return client;
 };
-type Database = Awaited<ReturnType<typeof Database>>;
 
-const DataTypes = sequelize.DataTypes;
-
-export { DataTypes, Database };
+export { Database };
