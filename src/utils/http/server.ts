@@ -4,7 +4,7 @@ import tls from 'node:tls';
 
 const createServer = (
   serverOptions: http.ServerOptions & {
-    tls: (tls.SecureContextOptions & tls.TlsOptions) | undefined;
+    tls?: tls.TlsOptions | null;
   },
   requestListener: http.RequestListener,
 ) =>

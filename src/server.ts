@@ -21,7 +21,7 @@ void (async function bootstrap() {
             passphrase: config.fromEnv('API_HTTP_CA_PASS'),
             rejectUnauthorized: false,
           }
-        : undefined,
+        : null,
     },
     app,
   );
