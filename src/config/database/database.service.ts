@@ -1,4 +1,4 @@
-import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { Options, Sequelize } from '@src/utils/database';
 import { nsid } from '@src/utils/nsid';
 

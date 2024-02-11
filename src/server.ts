@@ -1,6 +1,6 @@
 import { configureApplication } from '@src/app';
 import { Config } from '@src/config/env/config.service';
-import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { createServer } from '@src/utils/http/server';
 import { readFileSync } from '@src/utils/node/fs';
 

@@ -1,5 +1,5 @@
 import { Config } from '@src/config/env/config.service';
-import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { ApplicationLogger } from '@src/config/logging/logging.config';
 
 describe('Config', () => {
   const config = Config({ logger: ApplicationLogger() });

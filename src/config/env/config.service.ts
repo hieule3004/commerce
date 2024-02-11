@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { ValidationException } from '@src/common/exceptions/ValidationException';
 import { DotEnv, dotEnvValidator } from '@src/config/env/dotenv';
-import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { ApplicationLogger } from '@src/config/logging/logging.config';
 import * as process from '@src/utils/node/process';
 
 const parseEnv = (env: unknown, logger?: ApplicationLogger) => {

@@ -1,5 +1,5 @@
 import { RedisClientType, createClient } from 'redis';
-import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import { ApplicationLogger } from '@src/config/logging/logging.config';
 
 type CacheOptions = Parameters<typeof createClient>[0];
 type LoggerOptions = { logger: ApplicationLogger; appId: string };

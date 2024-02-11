@@ -3,7 +3,7 @@ import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constan
 import { VersionInfo } from '@src/config/version';
 import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
-import { ApplicationLogger } from './logging.utils';
+import { ApplicationLogger } from './logging.config';
 
 const ignores: Record<string, (keyof typeof HttpMethod)[]> = {
   '/health': ['GET'],
