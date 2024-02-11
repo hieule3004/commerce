@@ -1,6 +1,7 @@
-import { underscore } from 'inflection';
-import { Database, Model } from '@src/utils/database';
+import { Database } from '@src/config/database/database.service';
+import { Model } from '@src/utils/database';
 import random from '@src/utils/random';
+import { underscore } from '@src/utils/string/inflection';
 
 const setupDatabase = async (db: Database) => {
   await db.sync({ force: true });

@@ -1,9 +1,8 @@
-import http from 'node:http';
-import https from 'node:https';
 import { configureApplication } from '@src/app';
 import { Config } from '@src/config/env/config.service';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
-import { readFileSync } from '@src/utils/file';
+import { createServer } from '@src/utils/http/server';
+import { readFileSync } from '@src/utils/node/fs';
 
 void (async function bootstrap() {
   const app = await configureApplication();
@@ -13,17 +12,19 @@ void (async function bootstrap() {
   const id = app.get('AppId') as string;
 
   const isSecure = config.fromEnv('API_HTTP_SECURE');
-  const server = isSecure
-    ? https.createServer(
-        {
-          cert: readFileSync(config.fromEnv('API_HTTP_CA_CERT') as string),
-          key: readFileSync(config.fromEnv('API_HTTP_CA_KEY') as string),
-          passphrase: config.fromEnv('API_HTTP_CA_PASS'),
-          rejectUnauthorized: false,
-        },
-        app,
-      )
-    : http.createServer({}, app);
+  const server = createServer(
+    {
+      tls: isSecure
+        ? {
+            cert: readFileSync(config.fromEnv('API_HTTP_CA_CERT') as string),
+            key: readFileSync(config.fromEnv('API_HTTP_CA_KEY') as string),
+            passphrase: config.fromEnv('API_HTTP_CA_PASS'),
+            rejectUnauthorized: false,
+          }
+        : undefined,
+    },
+    app,
+  );
 
   const port = config.fromEnv('API_PORT');
   server.on('error', (error) => {

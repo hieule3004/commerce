@@ -1,7 +1,8 @@
-import path from 'node:path';
-import { camelize, pluralize, singularize } from 'inflection';
+import { Database } from '@src/config/database/database.service';
 import { Application, RequestHandler } from '@src/utils/application/index';
-import { Database, Model, ModelStatic, WhereOptions } from '@src/utils/database';
+import { Model, ModelStatic, WhereOptions } from '@src/utils/database';
+import * as path from '@src/utils/node/path';
+import { camelize, pluralize, singularize } from '@src/utils/string/inflection';
 
 const repositoryMethodMap = {
   find: 'get',

@@ -1,5 +1,6 @@
-import { pluralize } from 'inflection';
-import { DataTypes, Database, Model } from '@src/utils/database';
+import { Database } from '@src/config/database/database.service';
+import { DataTypes, Model } from '@src/utils/database';
+import { pluralize } from '@src/utils/string/inflection';
 
 const configureModels = (db: Database) => {
   type User = { username: string; password: string };

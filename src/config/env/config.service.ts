@@ -1,8 +1,8 @@
-import process from 'node:process';
 import dotenv from 'dotenv';
 import { ValidationException } from '@src/common/exceptions/ValidationException';
 import { DotEnv, dotEnvValidator } from '@src/config/env/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
+import * as process from '@src/utils/node/process';
 
 const parseEnv = (env: unknown, logger?: ApplicationLogger) => {
   const result = dotEnvValidator.safeParse(env);

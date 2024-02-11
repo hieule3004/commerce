@@ -1,13 +1,13 @@
 import { ApplicationLogger } from '@src/config/logging/logging.utils';
-import * as utils from '@src/utils/database';
+import { Options, Sequelize } from '@src/utils/database';
 import { nsid } from '@src/utils/nsid';
 
 type LoggerOptions = { logger: ApplicationLogger; appId: string };
 
-const Database = async (options: utils.Options, loggerOptions: LoggerOptions) => {
+const Database = async (options: Options, loggerOptions: LoggerOptions) => {
   const { logger, appId: id } = loggerOptions;
 
-  const client = new utils.Database({
+  const client = new Sequelize({
     ...options,
     // TODO: get id from context
     ['logging']: (sql) => logger.trace({ id: nsid(), type: 'query', data: { sql } }),
@@ -19,5 +19,6 @@ const Database = async (options: utils.Options, loggerOptions: LoggerOptions) =>
   );
   return client;
 };
+type Database = Sequelize;
 
 export { Database };

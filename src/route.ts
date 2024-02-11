@@ -1,7 +1,7 @@
 import { Cache } from '@src/config/cache/cache.service';
+import { Database } from '@src/config/database/database.service';
 import { VersionInfo } from '@src/config/version';
 import { Application, Layer, RequestHandler } from '@src/utils/application';
-import { Database } from '@src/utils/database';
 
 export function configureRoutes(app: Application) {
   app.route('/pg').post((async (req, res) => {
