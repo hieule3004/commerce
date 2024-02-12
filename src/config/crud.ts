@@ -22,7 +22,7 @@ function createRepository<T extends object>(model: ModelStatic<Model<T, T>>) {
   const associations = Object.values(model.associations)
     .filter((a) => a.associationType.startsWith('Has'))
     .map((a) => ({
-      associationType: camelize(a.associationType.substring('Has'.length), true),
+      associationType: camelize(a.associationType.substring('Has'.length), true) as AssociationType,
       resourceName: a.as,
       modelName: a.target.name,
     }));
@@ -104,7 +104,7 @@ const createRouter =
       const associationRouters = createRouter(repositories)(
         modelName,
         resourceName,
-        associationType as 'one' | 'many',
+        associationType,
         associationRoute,
       );
       routers.push(...associationRouters);
