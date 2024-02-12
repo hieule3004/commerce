@@ -4,6 +4,8 @@ import { Model, ModelStatic, WhereOptions } from '@src/utils/database';
 import * as path from '@src/utils/node/path';
 import { camelize, pluralize, singularize } from '@src/utils/string/inflection';
 
+type AssociationType = 'one' | 'many';
+
 const repositoryMethodMap = {
   find: 'get',
   create: 'put',
@@ -12,8 +14,7 @@ const repositoryMethodMap = {
 } as const;
 
 function createRepository<T extends object>(model: ModelStatic<Model<T, T>>) {
-  const manyRepository: Repository = {};
-  const oneRepository: Repository = {};
+  const repository: Record<AssociationType, Repository> = { one: {}, many: {} };
 
   const name = singularize(model.tableName);
   const pKey = model.primaryKeyAttribute;
@@ -21,8 +22,8 @@ function createRepository<T extends object>(model: ModelStatic<Model<T, T>>) {
   const associations = Object.values(model.associations)
     .filter((a) => a.associationType.startsWith('Has'))
     .map((a) => ({
-      type: camelize(a.associationType.substring('Has'.length), true),
-      name: a.as,
+      associationType: camelize(a.associationType.substring('Has'.length), true),
+      resourceName: a.as,
       modelName: a.target.name,
     }));
 
@@ -35,39 +36,43 @@ function createRepository<T extends object>(model: ModelStatic<Model<T, T>>) {
     return where as WhereOptions<T>;
   };
 
-  manyRepository.create = (_: Record<string, unknown>, value: T) => model.create(value as never);
-  manyRepository.find = (_: Record<string, unknown>, filter: object) => model.findAll(filter);
-  manyRepository[`findBy${pKeyC}`] = (attrs: Record<string, unknown>) =>
+  repository.many.create = (_: Record<string, unknown>, value: T) => model.create(value as never);
+  repository.many.find = (_: Record<string, unknown>, filter: object) => model.findAll(filter);
+  repository.many[`findBy${pKeyC}`] = (attrs: Record<string, unknown>) =>
     model.findOne({ include: { all: true }, where: where<T>(attrs) });
-  manyRepository[`updateBy${pKeyC}`] = (attrs: Record<string, unknown>, value: Partial<T>) =>
+  repository.many[`updateBy${pKeyC}`] = (attrs: Record<string, unknown>, value: Partial<T>) =>
     model.update(value, { where: where(attrs) });
-  manyRepository[`deleteBy${pKeyC}`] = (attrs: Record<string, unknown>) =>
+  repository.many[`deleteBy${pKeyC}`] = (attrs: Record<string, unknown>) =>
     model.destroy({ where: where(attrs) });
 
-  oneRepository.find = (attrs: Record<string, unknown>) =>
+  repository.one.find = (attrs: Record<string, unknown>) =>
     model.findOne({ include: { all: true }, where: where<T>(attrs) });
-  oneRepository.update = (attrs: Record<string, unknown>, value: Partial<T>) =>
+  repository.one.update = (attrs: Record<string, unknown>, value: Partial<T>) =>
     model.update(value, { where: where(attrs) });
-  oneRepository.delete = (attrs: Record<string, unknown>) => model.destroy({ where: where(attrs) });
+  repository.one.delete = (attrs: Record<string, unknown>) =>
+    model.destroy({ where: where(attrs) });
 
-  return { repository: { many: manyRepository, one: oneRepository }, associations };
+  return { repository, associations };
 }
 
 type Repository = Record<string, (...args: never[]) => Promise<unknown>>;
 
 function configureRoute(
   repository: Repository,
-  name: string,
-  type: 'one' | 'many' = 'many',
+  resourceName: string,
+  associationType: AssociationType = 'many',
   prefix = '/',
 ) {
-  const mainRoute = path.join(prefix, type === 'many' ? pluralize(name) : name);
+  const mainRoute = path.join(
+    prefix,
+    associationType === 'many' ? pluralize(resourceName) : resourceName,
+  );
 
   const router = (app: Application) => {
     for (const [key, action] of Object.entries(repository)) {
       const [command, attr] = key.split('By');
       const method = repositoryMethodMap[command as keyof typeof repositoryMethodMap];
-      const route = attr ? path.join(mainRoute, `:${name}${camelize(attr)}`) : mainRoute;
+      const route = attr ? path.join(mainRoute, `:${resourceName}${camelize(attr)}`) : mainRoute;
 
       app.route(route)[method]((async (req, res) => {
         const result = await action(
@@ -86,20 +91,20 @@ function configureRoute(
 type Router = ReturnType<typeof configureRoute>['router'];
 const createRouter =
   (repositories: Record<string, ReturnType<typeof createRepository>>) =>
-  (name: string, modelName = name, type: 'one' | 'many' = 'many', prefix = '/') => {
+  (modelName: string, resourceName = modelName, type: AssociationType = 'many', prefix = '/') => {
     const routers = Array<Router>();
 
     const { repository, associations } = repositories[modelName]!;
 
-    const { router, mainRoute } = configureRoute(repository[type], name, type, prefix);
+    const { router, mainRoute } = configureRoute(repository[type], resourceName, type, prefix);
     routers.push(router);
 
-    const associationRoute = path.join(mainRoute, `:${name}Id`);
-    for (const { name, modelName, type } of associations) {
+    const associationRoute = path.join(mainRoute, `:${resourceName}Id`);
+    for (const { resourceName, modelName, associationType } of associations) {
       const associationRouters = createRouter(repositories)(
-        name,
         modelName,
-        type as 'one' | 'many',
+        resourceName,
+        associationType as 'one' | 'many',
         associationRoute,
       );
       routers.push(...associationRouters);
