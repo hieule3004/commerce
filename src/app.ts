@@ -75,6 +75,7 @@ function configureMiddleware(app: Application) {
   const config = app.get('Config') as Config;
   const cache = app.get('Cache') as Cache;
 
+  app.set('ApiPrefix', config.fromEnv('API_PREFIX'));
   app.set('VersionInfo', VersionInfo(config.fromEnv('npm_package_dependencies_express')));
 
   app.use(serveStatic('public'));

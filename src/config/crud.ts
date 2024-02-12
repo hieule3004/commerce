@@ -89,31 +89,31 @@ function configureRoute(
 }
 
 type Router = ReturnType<typeof configureRoute>['router'];
-const createRouter =
-  (repositories: Record<string, ReturnType<typeof createRepository>>) =>
-  (modelName: string, resourceName = modelName, type: AssociationType = 'many', prefix = '/') => {
-    const routers = Array<Router>();
-
+const createRouter = (
+  repositories: Record<string, ReturnType<typeof createRepository>>,
+  globalPrefix = '/',
+) =>
+  function getRouteFunctions(
+    modelName: string,
+    resourceName = modelName,
+    type: AssociationType = 'many',
+    prefix = globalPrefix,
+  ): Router[] {
     const { repository, associations } = repositories[modelName]!;
 
     const { router, mainRoute } = configureRoute(repository[type], resourceName, type, prefix);
-    routers.push(router);
-
     const associationRoute = path.join(mainRoute, `:${resourceName}Id`);
-    for (const { resourceName, modelName, associationType } of associations) {
-      const associationRouters = createRouter(repositories)(
-        modelName,
-        resourceName,
-        associationType,
-        associationRoute,
-      );
-      routers.push(...associationRouters);
-    }
-    return routers;
+
+    const nestedRouters = associations.flatMap((r) =>
+      getRouteFunctions(r.modelName, r.resourceName, r.associationType, associationRoute),
+    );
+
+    return [router, ...nestedRouters];
   };
 
 const configureModelRoutes = (app: Application) => {
   const db = app.get('Database') as Database;
+  const apiPrefix = (app.get('ApiPrefix') ?? '/') as string;
 
   const repositories = Object.entries(db.models).reduce(
     (target, [modelName, model]) => {
@@ -122,7 +122,7 @@ const configureModelRoutes = (app: Application) => {
     },
     {} as Record<string, ReturnType<typeof createRepository>>,
   );
-  const getRouterFunction = createRouter(repositories);
+  const getRouterFunction = createRouter(repositories, apiPrefix);
   const fns = Object.keys(repositories).flatMap((modelName) => getRouterFunction(modelName));
   for (const routerFn of fns) routerFn(app);
 };

@@ -14,6 +14,7 @@ const serverSchema = z.object({
 
 const apiSchema = z.object({
   API_PORT: z.coerce.number().int().positive(),
+  API_PREFIX: z.string().optional(),
 
   API_SESSION_NAME: z.string().min(1),
   API_SESSION_KEYS: z.string().transform((s) => s.split(',')),
