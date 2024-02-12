@@ -2,8 +2,15 @@ import { Cache } from '@src/config/cache/cache.service';
 import { Database } from '@src/config/database/database.service';
 import { VersionInfo } from '@src/config/version';
 import { Application, Layer, RequestHandler } from '@src/utils/application';
+import { getSharedIdempotencyService } from '@src/utils/application/middleware';
 
 export function configureRoutes(app: Application) {
+  app.route('/test').post((req, res) => {
+    const idempotencyService = getSharedIdempotencyService();
+    const isHit = idempotencyService.isHit(req);
+    const idempotencyKey = idempotencyService.extractIdempotencyKeyFromReq(req);
+    res.json({ isHit, idempotencyKey });
+  });
   app.route('/pg').post((async (req, res) => {
     const { command, args } = req.body as { command: string; args?: unknown[] };
     res.json(

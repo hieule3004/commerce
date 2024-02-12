@@ -1,4 +1,5 @@
-import RedisStore from 'connect-redis';
+import { idempotencyAdapter } from '@src/config/cache/adapter/idempotency.adapter';
+import { SessionStore } from '@src/config/cache/adapter/session.store';
 import { Cache } from '@src/config/cache/cache.service';
 import { configureModelRoutes } from '@src/config/crud';
 import { setupDatabase } from '@src/config/database/database.config';
@@ -6,8 +7,7 @@ import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
-import { X_IDEMPOTENCE_KEY } from '@src/config/http/header/header.constant';
-import { idempotencyAdapter } from '@src/config/http/idempotency.adapter';
+import { X_IDEMPOTENCY_KEY } from '@src/config/http/header/header.constant';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { VersionInfo } from '@src/config/version';
@@ -100,7 +100,7 @@ function configureMiddleware(app: Application) {
   app.set('trust proxy', 1);
   app.use(
     session({
-      store: new RedisStore({
+      store: new SessionStore({
         client: cache,
         prefix: `${config.fromEnv('npm_package_name')}:session:`,
       }),
@@ -124,19 +124,19 @@ function configureMiddleware(app: Application) {
     }),
   );
 
-  app.use(
-    idempotency({
-      idempotencyKeyHeader: X_IDEMPOTENCE_KEY,
-      dataAdapter: idempotencyAdapter(cache, config.fromEnv('API_IDEMPOTENCY_KEY_TTL')),
-    }) as RequestHandler,
-  );
-
   // custom middleware
   app.use(customHeader);
   app.use(logRequest);
   app.use(logData);
 
   // routing
+  app.post(
+    '*',
+    idempotency({
+      idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
+      dataAdapter: idempotencyAdapter(cache, config.fromEnv('API_IDEMPOTENCY_KEY_TTL')),
+    }) as RequestHandler,
+  );
   configureModelRoutes(app);
   configureRoutes(app);
 

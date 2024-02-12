@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import methodOverride from 'method-override';
 
 export { json, urlencoded, raw } from 'express';
-export { idempotency } from 'express-idempotency';
+export { idempotency, getSharedIdempotencyService } from 'express-idempotency';
 export {
   cors,
   helmet,
