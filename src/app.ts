@@ -6,17 +6,20 @@ import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
+import { X_IDEMPOTENCE_KEY } from '@src/config/http/header/header.constant';
+import { idempotencyAdapter } from '@src/config/http/idempotency.adapter';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { VersionInfo } from '@src/config/version';
 import { configureModels } from '@src/model';
 import { configureRoutes } from '@src/route';
-import { Application, serveStatic } from '@src/utils/application';
+import { Application, RequestHandler, serveStatic } from '@src/utils/application';
 import {
   compression,
   cookieParser,
   cors,
   helmet,
+  idempotency,
   json,
   methodOverride,
   rateLimit,
@@ -119,6 +122,13 @@ function configureMiddleware(app: Application) {
       },
       standardHeaders: true,
     }),
+  );
+
+  app.use(
+    idempotency({
+      idempotencyKeyHeader: X_IDEMPOTENCE_KEY,
+      dataAdapter: idempotencyAdapter(cache, config.fromEnv('API_IDEMPOTENCY_KEY_TTL')),
+    }) as RequestHandler,
   );
 
   // custom middleware

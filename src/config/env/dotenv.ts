@@ -29,6 +29,8 @@ const apiSchema = z.object({
     .int()
     .positive()
     .default(convert(1, 'min').to('ms')),
+
+  API_IDEMPOTENCY_KEY_TTL: z.coerce.number().int().positive().default(convert(1, 'day').to('s')),
 });
 
 const httpSecureSchema = z
