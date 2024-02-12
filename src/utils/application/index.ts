@@ -41,3 +41,5 @@ export {
   static as serveStatic,
   Router,
 } from 'express';
+
+export * from './handler';
