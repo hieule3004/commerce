@@ -1,8 +1,8 @@
 import {
+  PERMISSIONS_POLICY,
   X_REQUEST_ID,
   X_REQUEST_TIMESTAMP,
-  PERMISSIONS_POLICY,
-} from '@src/config/http/http.constant';
+} from '@src/config/http/header/header.constant';
 import { RequestHandler } from '@src/utils/application';
 import { decodeTime, nsid } from '@src/utils/nsid';
 

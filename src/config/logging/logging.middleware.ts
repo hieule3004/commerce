@@ -1,5 +1,5 @@
 import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
-import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/http.constant';
+import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/header/header.constant';
 import { VersionInfo } from '@src/config/version';
 import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
