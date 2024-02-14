@@ -5,7 +5,7 @@ import { Application, Layer, asyncHandler } from '@src/utils/application';
 import { getSharedIdempotencyService } from '@src/utils/application/middleware';
 
 export function configureRoutes(app: Application) {
-  app.route('/test').post((req, res) => {
+  app.route('/test').all((req, res) => {
     const idempotencyService = getSharedIdempotencyService();
     const isHit = idempotencyService.isHit(req);
     const idempotencyKey = idempotencyService.extractIdempotencyKeyFromReq(req);

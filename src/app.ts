@@ -124,14 +124,7 @@ function configureMiddleware(app: Application) {
     }),
   );
 
-  // custom middleware
-  app.use(customHeader);
-  app.use(logRequest);
-  app.use(logData);
-
-  // routing
-  app.post(
-    '*',
+  app.use(
     asyncHandler(
       idempotency({
         idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
@@ -140,9 +133,17 @@ function configureMiddleware(app: Application) {
           `${config.fromEnv('npm_package_name')}:idempotency:`,
           config.fromEnv('API_IDEMPOTENCY_KEY_TTL'),
         ),
+        intentValidator: { isValidIntent: (req) => req.method === 'POST' },
       }),
     ),
   );
+
+  // custom middleware
+  app.use(customHeader);
+  app.use(logRequest);
+  app.use(logData);
+
+  // routing
   configureModelRoutes(app);
   configureRoutes(app);
 
