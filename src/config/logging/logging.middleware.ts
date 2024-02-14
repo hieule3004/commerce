@@ -4,8 +4,6 @@ import { VersionInfo } from '@src/config/version';
 import { Layer, Request, RequestHandler, Response, patchHandler } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
 import { ApplicationLogger } from './logging.config';
-import { getSharedIdempotencyService } from '@src/utils/application/middleware';
-import { Writable } from '@src/utils/type';
 
 const ignores: Record<string, (keyof typeof HttpMethod)[]> = {
   '/health': ['GET'],
