@@ -7,9 +7,8 @@ import { getSharedIdempotencyService } from '@src/utils/application/middleware';
 export function configureRoutes(app: Application) {
   app.route('/test').all((req, res) => {
     const idempotencyService = getSharedIdempotencyService();
-    const isHit = idempotencyService.isHit(req);
     const idempotencyKey = idempotencyService.extractIdempotencyKeyFromReq(req);
-    res.json({ isHit, idempotencyKey });
+    res.json({ idempotencyKey });
   });
   app.route('/pg').post(
     asyncHandler(async (req, res) => {
