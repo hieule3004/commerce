@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import { idempotencyAdapter } from '@src/config/cache/adapter/idempotency.adapter';
 import { SessionStore } from '@src/config/cache/adapter/session.store';
 import { Cache } from '@src/config/cache/cache.service';
@@ -133,18 +132,16 @@ function configureMiddleware(app: Application) {
   // routing
 
   app.use(
-    Router().use(
-      asyncHandler(
-        idempotency({
-          idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
-          dataAdapter: idempotencyAdapter(
-            cache,
-            `${config.fromEnv('npm_package_name')}:idempotency:`,
-            config.fromEnv('API_IDEMPOTENCY_KEY_TTL'),
-          ),
-          intentValidator: { isValidIntent: (req) => req.method === 'POST' },
-        }),
-      ),
+    asyncHandler(
+      idempotency({
+        idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
+        dataAdapter: idempotencyAdapter(
+          cache,
+          `${config.fromEnv('npm_package_name')}:idempotency:`,
+          config.fromEnv('API_IDEMPOTENCY_KEY_TTL'),
+        ),
+        intentValidator: { isValidIntent: (req) => req.method === 'POST' },
+      }),
     ),
   );
   configureModelRoutes(app);
