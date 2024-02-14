@@ -1,3 +1,4 @@
+import { idempotencyAdapter } from '@src/config/cache/adapter/idempotency.adapter';
 import { SessionStore } from '@src/config/cache/adapter/session.store';
 import { Cache } from '@src/config/cache/cache.service';
 import { configureModelRoutes } from '@src/config/crud';
@@ -6,17 +7,19 @@ import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
+import { X_IDEMPOTENCY_KEY } from '@src/config/http/header/header.constant';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { VersionInfo } from '@src/config/version';
 import { configureModels } from '@src/model';
 import { configureRoutes } from '@src/route';
-import { Application, serveStatic } from '@src/utils/application';
+import { Application, asyncHandler, serveStatic } from '@src/utils/application';
 import {
   compression,
   cookieParser,
   cors,
   helmet,
+  idempotency,
   json,
   methodOverride,
   rateLimit,
@@ -127,15 +130,19 @@ function configureMiddleware(app: Application) {
   app.use(logData);
 
   // routing
-  // app.post(
-  //   '*',
-  //   asyncHandler(
-  //     idempotency({
-  //       idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
-  //       dataAdapter: idempotencyAdapter(cache, config.fromEnv('API_IDEMPOTENCY_KEY_TTL')),
-  //     }),
-  //   ),
-  // );
+  app.post(
+    '*',
+    asyncHandler(
+      idempotency({
+        idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
+        dataAdapter: idempotencyAdapter(
+          cache,
+          `${config.fromEnv('npm_package_name')}:idempotency:`,
+          config.fromEnv('API_IDEMPOTENCY_KEY_TTL'),
+        ),
+      }),
+    ),
+  );
   configureModelRoutes(app);
   configureRoutes(app);
 

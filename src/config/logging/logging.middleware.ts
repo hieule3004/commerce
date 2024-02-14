@@ -20,9 +20,11 @@ const logRequest: RequestHandler = (req, res, next) => {
     logger.log(requestDto);
 
     const $ = res.json;
-    res.json = function (data: object) {
+    res.json = function logResponse(data: object) {
       const responseDto = buildResponseLog(res);
       logger.log(responseDto);
+
+      if ($.name && res.headersSent) return res;
       return $.call(this, data);
     };
   }
@@ -37,10 +39,11 @@ const logData: RequestHandler = function (req, res, next) {
     const sid = req.sessionID;
 
     const $ = res.json;
-    res.json = function (data: object) {
+    res.json = function logData(data: object) {
       if ('error' in data) logger.debug({ id, sid, type: 'error', ...data } as JsonErrorDto);
       else logger.debug({ id, sid, type: 'data', data } as JsonDto);
 
+      if ($.name && res.headersSent) return res;
       return $.call(this, data);
     };
   }
