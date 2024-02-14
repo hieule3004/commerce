@@ -42,4 +42,4 @@ export {
   Router,
 } from 'express';
 
-export * from './handler';
+export * from './utils';

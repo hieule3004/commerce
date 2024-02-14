@@ -1,7 +1,7 @@
 import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
 import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/header/header.constant';
 import { VersionInfo } from '@src/config/version';
-import { Layer, Request, RequestHandler, Response } from '@src/utils/application';
+import { Layer, Request, RequestHandler, Response, patchHandler } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
 import { ApplicationLogger } from './logging.config';
 
@@ -19,14 +19,10 @@ const logRequest: RequestHandler = (req, res, next) => {
     const requestDto = buildRequestLog(req);
     logger.log(requestDto);
 
-    const $ = res.json;
-    res.json = function logResponse(data: object) {
+    patchHandler('json', () => {
       const responseDto = buildResponseLog(res);
       logger.log(responseDto);
-
-      if ($.name && res.headersSent) return res;
-      return $.call(this, data);
-    };
+    })(req, res, next);
   }
 
   next();
@@ -38,14 +34,10 @@ const logData: RequestHandler = function (req, res, next) {
     const id = req.headers[X_REQUEST_ID] as string;
     const sid = req.sessionID;
 
-    const $ = res.json;
-    res.json = function logData(data: object) {
+    patchHandler('json', (data: object) => {
       if ('error' in data) logger.debug({ id, sid, type: 'error', ...data } as JsonErrorDto);
       else logger.debug({ id, sid, type: 'data', data } as JsonDto);
-
-      if ($.name && res.headersSent) return res;
-      return $.call(this, data);
-    };
+    })(req, res, next);
   }
 
   next();
