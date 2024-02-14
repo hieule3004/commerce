@@ -4,6 +4,8 @@ import { VersionInfo } from '@src/config/version';
 import { Layer, Request, RequestHandler, Response, patchHandler } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
 import { ApplicationLogger } from './logging.config';
+import { getSharedIdempotencyService } from '@src/utils/application/middleware';
+import { Writable } from '@src/utils/type';
 
 const ignores: Record<string, (keyof typeof HttpMethod)[]> = {
   '/health': ['GET'],
@@ -19,7 +21,7 @@ const logRequest: RequestHandler = (req, res, next) => {
     const requestDto = buildRequestLog(req);
     logger.log(requestDto);
 
-    patchHandler('json', () => {
+    patchHandler('send', () => {
       const responseDto = buildResponseLog(res);
       logger.log(responseDto);
     })(req, res, next);
@@ -34,7 +36,8 @@ const logData: RequestHandler = function (req, res, next) {
     const id = req.headers[X_REQUEST_ID] as string;
     const sid = req.sessionID;
 
-    patchHandler('json', (data: object) => {
+    patchHandler('send', (_data: string) => {
+      const data = JSON.parse(_data) as object;
       if ('error' in data) logger.debug({ id, sid, type: 'error', ...data } as JsonErrorDto);
       else logger.debug({ id, sid, type: 'data', data } as JsonDto);
     })(req, res, next);

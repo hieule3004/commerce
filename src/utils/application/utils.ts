@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 
 
 /** Async handler. Typed version of https://github.com/Abazhenov/express-async-handler */
@@ -9,15 +9,13 @@ const asyncHandler: (
 
 /** Monkey patching res function. Simplified from https://github.com/richardschneider/express-mung */
 const patchHandler =
-  <T = unknown>(
-    key: 'json',
-    fn: (data: T) => void,
-  ): RequestHandler =>
+  <T = unknown>(key: 'json' | 'send', fn: (data: T) => void): RequestHandler =>
   (req, res) => {
     const original = res[key];
     res[key] = function __patch__(data: T) {
+      if (res.headersSent) return res;
       fn(data);
-      if (original.name !== '__patch__' && res.headersSent) return res;
+      if (res.headersSent) return res;
       return original.call(this, data);
     };
   };
