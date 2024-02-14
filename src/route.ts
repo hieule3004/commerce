@@ -1,7 +1,7 @@
 import { Cache } from '@src/config/cache/cache.service';
 import { Database } from '@src/config/database/database.service';
 import { VersionInfo } from '@src/config/version';
-import { Application, Layer, RequestHandler } from '@src/utils/application';
+import { Application, Layer, asyncHandler } from '@src/utils/application';
 import { getSharedIdempotencyService } from '@src/utils/application/middleware';
 
 export function configureRoutes(app: Application) {
@@ -11,22 +11,28 @@ export function configureRoutes(app: Application) {
     const idempotencyKey = idempotencyService.extractIdempotencyKeyFromReq(req);
     res.json({ isHit, idempotencyKey });
   });
-  app.route('/pg').post((async (req, res) => {
-    const { command, args } = req.body as { command: string; args?: unknown[] };
-    res.json(
-      await (app.get('Database') as Database)
-        .query(command, { replacements: args!, type: command.split(' ')[0]! })
-        .then((data) => ({ data }))
-        .catch((error: unknown) => ({ error })),
-    );
-  }) as RequestHandler);
+  app.route('/pg').post(
+    asyncHandler(async (req, res) => {
+      const { command, args } = req.body as { command: string; args?: unknown[] };
+      res.json(
+        await (app.get('Database') as Database)
+          .query(command, { replacements: args!, type: command.split(' ')[0]! })
+          .then((data) => ({ data }))
+          .catch((error: unknown) => ({ error })),
+      );
+    }),
+  );
 
-  app.route('/redis').post((async (req, res) => {
-    const { command } = req.body as { command: string };
-    res.json(
-      await (app.get('Cache') as Cache).sendCommand(command.split(' ')).then((data) => ({ data })),
-    );
-  }) as RequestHandler);
+  app.route('/redis').post(
+    asyncHandler(async (req, res) => {
+      const { command } = req.body as { command: string };
+      res.json(
+        await (app.get('Cache') as Cache)
+          .sendCommand(command.split(' '))
+          .then((data) => ({ data })),
+      );
+    }),
+  );
 
   app.route('/error').get(() => {
     throw new Error('error');

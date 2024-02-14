@@ -1,5 +1,5 @@
 import { Database } from '@src/config/database/database.service';
-import { Application, RequestHandler } from '@src/utils/application/index';
+import { Application, asyncHandler } from '@src/utils/application/index';
 import { Model, ModelStatic, WhereOptions } from '@src/utils/database';
 import * as path from '@src/utils/node/path';
 import { camelize, pluralize, singularize } from '@src/utils/string/inflection';
@@ -74,14 +74,16 @@ function configureRoute(
       const method = repositoryMethodMap[command as keyof typeof repositoryMethodMap];
       const route = attr ? path.join(mainRoute, `:${resourceName}${camelize(attr)}`) : mainRoute;
 
-      app.route(route)[method]((async (req, res) => {
-        const result = await action(
-          ...([req.params, method === 'get' ? req.query : req.body] as never[]),
-        )
-          .then((data) => ({ data }))
-          .catch((error: unknown) => ({ error }));
-        res.json(result);
-      }) as RequestHandler);
+      app.route(route)[method](
+        asyncHandler(async (req, res) => {
+          const result = await action(
+            ...([req.params, method === 'get' ? req.query : req.body] as never[]),
+          )
+            .then((data) => ({ data }))
+            .catch((error: unknown) => ({ error }));
+          res.json(result);
+        }),
+      );
     }
   };
 
