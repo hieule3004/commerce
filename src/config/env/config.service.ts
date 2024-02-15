@@ -16,12 +16,17 @@ const parseEnv = (env: unknown, logger?: ApplicationLogger) => {
 type ConfigOptions = { logger?: ApplicationLogger };
 
 const Config = ({ logger }: ConfigOptions = {}) => {
-  const env = { ...process.env } as Record<string, string>;
-  dotenv.config({ path: process.env.ENV_PATH!, processEnv: env });
+  const env = loadConfig();
   const dotEnv = parseEnv(env, logger);
 
   return { fromEnv: <K extends keyof DotEnv>(key: K) => dotEnv[key] };
 };
 type Config = ReturnType<typeof Config>;
+
+function loadConfig() {
+  const env = { ...process.env } as Record<string, string>;
+  dotenv.config({ path: process.env.ENV_PATH!, processEnv: env });
+  return env;
+}
 
 export { Config };
