@@ -1,5 +1,5 @@
 import { JsonDto, JsonErrorDto } from '@src/common/dtos/json.dto';
-import { X_REQUEST_ID, X_REQUEST_TIMESTAMP } from '@src/config/http/header/header.constant';
+import { CustomHeaders } from '@src/common/http/header';
 import { VersionInfo } from '@src/config/version';
 import { Layer, Request, RequestHandler, patchHandler } from '@src/utils/application';
 import { HttpMethod, HttpStatus, StatusCodes } from '@src/utils/http/http';
@@ -15,7 +15,7 @@ const logRequest: RequestHandler = (req, res, next) => {
 
   if (!isIgnoredEndpoint(req)) {
     const logger = req.app.get('Logger') as ApplicationLogger;
-    const id = req.headers[X_REQUEST_ID] as string;
+    const id = req.headers[CustomHeaders.X_REQUEST_ID] as string;
     const sid = req.sessionID;
 
     // log request
@@ -28,7 +28,7 @@ const logRequest: RequestHandler = (req, res, next) => {
       // log response
       const code = res.statusCode;
       const message = res.statusMessage ?? StatusCodes[code];
-      const responseTime = Date.now() - Number(res.req.headers[X_REQUEST_TIMESTAMP]);
+      const responseTime = Date.now() - Number(res.req.headers[CustomHeaders.X_REQUEST_TIMESTAMP]);
       logger.log({ id, sid, type: 'response', data: { code, message, responseTime } });
     })(req, res, next);
   }
@@ -39,7 +39,7 @@ const logRequest: RequestHandler = (req, res, next) => {
 const logData: RequestHandler = function (req, res, next) {
   if (!isIgnoredEndpoint(req)) {
     const logger = req.app.get('Logger') as ApplicationLogger;
-    const id = req.headers[X_REQUEST_ID] as string;
+    const id = req.headers[CustomHeaders.X_REQUEST_ID] as string;
     const sid = req.sessionID;
 
     patchHandler('send', (str: string) => {

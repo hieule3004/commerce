@@ -1,22 +1,18 @@
-import {
-  PERMISSIONS_POLICY,
-  X_REQUEST_ID,
-  X_REQUEST_TIMESTAMP,
-} from '@src/config/http/header/header.constant';
+import { CustomHeaders } from '@src/common/http/header';
 import { RequestHandler } from '@src/utils/application';
 import { decodeTime, nsid } from '@src/utils/nsid';
 
 const customHeader: RequestHandler = (req, res, next) => {
   // set custom request id
   const requestId = nsid();
-  req.headers[X_REQUEST_ID] = requestId;
-  res.setHeader(X_REQUEST_ID, requestId);
+  req.headers[CustomHeaders.X_REQUEST_ID] = requestId;
+  res.setHeader(CustomHeaders.X_REQUEST_ID, requestId);
 
   // set custom request timestamp
-  req.headers[X_REQUEST_TIMESTAMP] = String(decodeTime(requestId));
+  req.headers[CustomHeaders.X_REQUEST_TIMESTAMP] = String(decodeTime(requestId));
 
   // set permissions policy: https://github.com/helmetjs/helmet/issues/234
-  res.setHeader(PERMISSIONS_POLICY.toLowerCase(), 'geolocation=(), payment=(), usb=()');
+  res.setHeader(CustomHeaders.PERMISSIONS_POLICY, 'geolocation=(), payment=(), usb=()');
 
   next();
 };

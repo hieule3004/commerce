@@ -7,7 +7,7 @@ import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
-import { X_IDEMPOTENCY_KEY } from '@src/config/http/header/header.constant';
+import { CustomHeaders } from '@src/common/http/header';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { VersionInfo } from '@src/config/version';
@@ -134,7 +134,7 @@ function configureMiddleware(app: Application) {
   app.use(
     asyncHandler(
       idempotency({
-        idempotencyKeyHeader: X_IDEMPOTENCY_KEY,
+        idempotencyKeyHeader: CustomHeaders.X_IDEMPOTENCY_KEY,
         dataAdapter: idempotencyAdapter(
           cache,
           `${config.fromEnv('npm_package_name')}:idempotency:`,
