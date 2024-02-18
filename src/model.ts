@@ -1,5 +1,5 @@
 import { Database } from '@src/config/database/database.service';
-import { DataTypes, Model } from '@src/utils/database';
+import { DataTypes, Model, ModelStatic } from '@src/utils/database';
 import { pluralize } from '@src/utils/string/inflection';
 
 const configureModels = (db: Database) => {
@@ -17,6 +17,12 @@ const configureModels = (db: Database) => {
   });
 
   UserModel.hasOne(ContactModel, { as: 'contactInfo', foreignKey: 'userId' });
+
+  return { user: UserModel, contact: ContactModel };
 };
 
-export { configureModels };
+type ModelType<S> = S extends ModelStatic<infer M> ? (M extends Model<infer D> ? D : never) : never;
+type ModelMap<M> = { [K in keyof M]: ModelType<M[K]> };
+type Models = ModelMap<ReturnType<typeof configureModels>>;
+
+export { Models, configureModels };

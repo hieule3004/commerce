@@ -1,18 +1,18 @@
+import { CustomHeaders } from '@src/common/http/header';
 import { idempotencyAdapter } from '@src/config/cache/adapter/idempotency.adapter';
 import { SessionStore } from '@src/config/cache/adapter/session.store';
 import { Cache } from '@src/config/cache/cache.service';
-import { configureModelRoutes } from '@src/config/crud';
 import { setupDatabase } from '@src/config/database/database.config';
 import { Database } from '@src/config/database/database.service';
 import { Config } from '@src/config/env/config.service';
 import { exceptionFilter } from '@src/config/http/exception.filter';
 import { customHeader } from '@src/config/http/header.middleware';
-import { CustomHeaders } from '@src/common/http/header';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import { logData, logRequest } from '@src/config/logging/logging.middleware';
 import { VersionInfo } from '@src/config/version';
 import { configureModels } from '@src/model';
 import { configureRoutes } from '@src/route';
+import { createRoutes } from '@src/routes/index';
 import { Application, asyncHandler, serveStatic } from '@src/utils/application';
 import {
   compression,
@@ -144,7 +144,8 @@ function configureMiddleware(app: Application) {
       }),
     ),
   );
-  configureModelRoutes(app);
+  // configureModelRoutes(app);
+  createRoutes(app);
   configureRoutes(app);
 
   // exception filter
