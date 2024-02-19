@@ -1,5 +1,6 @@
 import { ErrorRequestHandler } from '@src/utils/application';
-import { HttpException } from '@src/utils/http/exception';
+
+import { HttpException } from '@src/utils/http/http';
 
 const exceptionFilter: ErrorRequestHandler = (err: string | object, _, res, next) => {
   const exception = err instanceof HttpException ? err : new HttpException(500, err);

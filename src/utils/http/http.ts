@@ -1,6 +1,23 @@
 import http from 'node:http';
 import http2 from 'node:http2';
-import { HttpException } from './exception';
+
+class HttpException extends Error {
+  constructor(
+    readonly status: number,
+    readonly response?: string | object,
+    readonly cause?: Error,
+  ) {
+    super(typeof response === 'string' ? response : StatusCodes[status], { cause });
+  }
+
+  getStatus() {
+    return this.status;
+  }
+
+  getResponse() {
+    return this.response;
+  }
+}
 
 const constants = http2.constants;
 
@@ -41,4 +58,4 @@ const HttpMethod = ConstantExtract('HTTP2_METHOD', (m) => m);
 
 const HttpHeader = ConstantExtract('HTTP2_HEADER', (h) => h);
 
-export { HttpHeader, HttpMethod, HttpStatus, StatusCodes };
+export { HttpException, HttpHeader, HttpMethod, HttpStatus, StatusCodes };
