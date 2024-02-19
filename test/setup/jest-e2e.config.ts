@@ -5,4 +5,4 @@ module.exports = {
   testRegex: '.*\\.e2e-spec\\.ts$',
   testTimeout: 10_000,
   cache: false,
-} as typeof defaultConfig;
+} satisfies typeof defaultConfig;
