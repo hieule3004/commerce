@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.json",
     "prestart": "until [ -f ./dist/etc/scripts/tsconfig-paths.js ]; do sleep 0.1; done",
     "start": "ENV_PATH=${ENV_PATH:-etc/env/.env.local} node -r @swc-node/register -r ./dist/etc/scripts/tsconfig-paths.js ./dist/src/server.js",
     "start:dev": "concurrently -k -p none yarn:watch:*",
