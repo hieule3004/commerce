@@ -33,15 +33,15 @@ const Controller = <Result>(fn: (context: Context) => Promise<Result>) =>
   });
 
 const CreateUserService = Repository('user', (userModel) => {
-  return async (user: User) => await userModel.create(user);
+  return (user: User) => userModel.create(user);
 });
 
 const GetUserByIdService = Repository('user', (userModel) => {
-  return async (id: number) => userModel.findByPk(id);
+  return (id: number) => userModel.findByPk(id);
 });
 
 const GetUsersService = Repository('user', (userModel) => {
-  return async (filter: FindOptions<User>) => await userModel.findAll(filter);
+  return (filter: FindOptions<User>) => userModel.findAll(filter);
 });
 
 const AddEmailToUser = (model: Model<User>, domainSupplier: () => string) => {
