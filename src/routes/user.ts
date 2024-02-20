@@ -43,15 +43,15 @@ const AddEmailToUser = (model: Model<User>) => {
 };
 
 const CreateUserController = Controller(async (ctx) => {
-  return await CreateUserService(ctx)(ctx.req.body as User);
+  return CreateUserService(ctx)(ctx.req.body as User);
 });
 
 const GetUserByIdController = Controller(async (ctx) => {
-  return await GetUserByIdService(ctx)(Number(ctx.req.params.userId!));
+  return GetUserByIdService(ctx)(Number(ctx.req.params.userId!));
 });
 
 const GetUsersController = Controller(async (ctx) => {
-  return await GetUsersService(ctx)(ctx.req.query);
+  return GetUsersService(ctx)(ctx.req.query);
 });
 
 const GetUsersWithEmailController = Controller(async (ctx) => {
