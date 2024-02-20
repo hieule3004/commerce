@@ -1,1 +1,1 @@
-export { cwd, env } from 'node:process';
+export { cwd, env, exit, kill } from 'node:process';

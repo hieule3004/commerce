@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { ValidationException } from '@src/common/exceptions/ValidationException';
 import { DotEnv, dotEnvValidator } from '@src/config/env/dotenv';
 import { ApplicationLogger } from '@src/config/logging/logging.config';
 import * as process from '@src/utils/node/process';
@@ -7,8 +6,8 @@ import * as process from '@src/utils/node/process';
 const parseEnv = (env: unknown, logger?: ApplicationLogger) => {
   const result = dotEnvValidator.safeParse(env);
   if (!result.success) {
-    (logger ?? console).error(result.error.format());
-    throw new ValidationException(result.error);
+    (logger ?? console).error({ error: result.error.format() });
+    process.exit(1);
   }
   return result.data;
 };
