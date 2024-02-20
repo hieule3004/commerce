@@ -9,22 +9,21 @@ type Context = { req: Request; res: Response };
 
 type User = Models['user'];
 
-const Repository =
-  <K extends keyof Models, Result>(
-    modelName: K,
-    injectFn: (model: ModelStatic<Model<Models[K]>>) => Result,
-  ) =>
-  (ctx: Context) => {
-    const db = ctx.req.app.get('Database') as Database;
-    const model = db.model(modelName) as ModelStatic<Model<Models[K]>>;
-    return injectFn(model);
-  };
-
 const Service =
-  <Args extends unknown[], Result>(injectFn: (ctx: Context) => (...args: Args) => Result) =>
+  <Result>(injectFn: (ctx: Context) => Result) =>
   (ctx: Context) => {
     return injectFn(ctx);
   };
+
+const Repository = <K extends keyof Models, Result>(
+  modelName: K,
+  injectFn: (model: ModelStatic<Model<Models[K]>>) => Result,
+) =>
+  Service((ctx: Context) => {
+    const db = ctx.req.app.get('Database') as Database;
+    const model = db.model(modelName) as ModelStatic<Model<Models[K]>>;
+    return injectFn(model);
+  });
 
 const Controller = <Result>(fn: (context: Context) => Promise<Result>) =>
   asyncHandler(async (req, res) => {
